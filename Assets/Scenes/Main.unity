@@ -575,8 +575,8 @@ MonoBehaviour:
     m_Flags: 0
   movementSpeedUp:
     m_Name: Movement Speed Up
-    m_Type: 1
-    m_ExpectedControlType: Button
+    m_Type: 0
+    m_ExpectedControlType: Analog
     m_Id: 4d915a1b-035c-4bc4-af65-eeb9c5c0ca89
     m_Processors: 
     m_Interactions: 
