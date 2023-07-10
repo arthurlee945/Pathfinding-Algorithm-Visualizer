@@ -523,7 +523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8db996dcad3834b935576379157a31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 330585545}
+  mainCamera: {fileID: 0}
   cameraMovement:
     m_Name: Camera Movement
     m_Type: 0
@@ -542,7 +542,7 @@ MonoBehaviour:
       m_Flags: 4
     - m_Name: up
       m_Id: be731b54-9072-4ec6-a036-962420fa50c6
-      m_Path: 
+      m_Path: <Keyboard>/w
       m_Interactions: 
       m_Processors: 
       m_Groups: 
@@ -573,6 +573,7 @@ MonoBehaviour:
       m_Action: Camera Movement
       m_Flags: 8
     m_Flags: 0
+  smoothInputSpeed: 0.3
   cameraRotation:
     m_Name: Camera Rotation
     m_Type: 0
