@@ -523,7 +523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8db996dcad3834b935576379157a31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
+  mainCamera: {fileID: 330585545}
   cameraMovement:
     m_Name: Camera Movement
     m_Type: 0
@@ -573,41 +573,26 @@ MonoBehaviour:
       m_Action: Camera Movement
       m_Flags: 8
     m_Flags: 0
+  movementSpeedUp:
+    m_Name: Movement Speed Up
+    m_Type: 1
+    m_ExpectedControlType: Button
+    m_Id: 4d915a1b-035c-4bc4-af65-eeb9c5c0ca89
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 32d94578-ff6c-40c2-9bf8-ba9ee19b8630
+      m_Path: <Keyboard>/leftShift
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Movement Speed Up
+      m_Flags: 0
+    m_Flags: 0
   smoothInputSpeed: 0.3
-  cameraRotation:
-    m_Name: Camera Rotation
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 8737c8a6-305d-4df3-8313-149e6b9a5c3d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 172404d5-1762-4aba-b69b-fb0e1a75b51b
-      m_Path: <Mouse>/rightButton
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Camera Rotation
-      m_Flags: 0
-    m_Flags: 0
-  cameraDrag:
-    m_Name: Camera Drag
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: c57dd899-d724-4131-8ac8-2b6edd42ede0
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: e5044313-bc1b-40ba-bbea-bd8230efd836
-      m_Path: <Mouse>/middleButton
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Camera Drag
-      m_Flags: 0
-    m_Flags: 0
+  moveSpeed: 10
+  fastMoveSpeed: 20
 --- !u!4 &184792918
 Transform:
   m_ObjectHideFlags: 0
@@ -620,8 +605,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1407743001}
-  m_RootOrder: -1
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &227456166
 GameObject:
@@ -2688,7 +2673,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1198216184
 GameObject:
@@ -3169,39 +3154,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1407743000
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1407743001}
-  m_Layer: 0
-  m_Name: Managers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1407743001
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407743000}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1666457858}
-  - {fileID: 184792918}
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1466855973
 GameObject:
   m_ObjectHideFlags: 0
@@ -3654,8 +3606,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1407743001}
-  m_RootOrder: -1
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1666457859
 MonoBehaviour:
