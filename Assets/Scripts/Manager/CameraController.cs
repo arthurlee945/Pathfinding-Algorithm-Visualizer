@@ -11,8 +11,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] float smoothInputSpeed = .3f;
     [SerializeField] float defaultMoveSpeed = 10f;
     [SerializeField] float fastMoveSpeed = 20f;
-    Vector2 currentInputMovementVector;
-    Vector2 smoothInputVelocity;
+    Vector2 currentInputMovementVector, smoothInputVelocity;
     //-------------Zoom Fields
     [Header("Camera Zoom Fields")]
     [SerializeField] InputAction mouseScrollInput;
