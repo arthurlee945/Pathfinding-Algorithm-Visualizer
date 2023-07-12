@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(RectTransform))]
 public class OptionsDropdown : MonoBehaviour
 {
     [SerializeField] RectTransform optDropdown;
-    [SerializeField] float dropdownSpeed = 650f;
+    [SerializeField] TMP_Dropdown algorithmDropdown, modeDropdown;
+    [SerializeField] float dropdownSpeed = 700f;
     RectTransform rectTransform;
-    float maxHeight = 125f;
+    float maxHeight = 220f;
     float dropdownWidth;
     bool isOpen;
     Coroutine dropdownAnimationCoroutine;
@@ -25,6 +27,10 @@ public class OptionsDropdown : MonoBehaviour
             StopCoroutine(dropdownAnimationCoroutine);
         isOpen = !isOpen;
         dropdownAnimationCoroutine = StartCoroutine(DropdownAnimation(isOpen));
+    }
+    public void HandleModeSizeToggle()
+    {
+        string selectedMode = modeDropdown.options[modeDropdown.value].text;
     }
     IEnumerator DropdownAnimation(bool open)
     {
