@@ -33,6 +33,16 @@ public class SizePanelControl : MonoBehaviour
         y3D.onValueChanged.AddListener(func => HandleIntClampAndValidation(y3D));
         z3D.onValueChanged.AddListener(func => HandleIntClampAndValidation(z3D));
     }
+    void OnDisable()
+    {
+        //-----------event 2d
+        x2D.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(x2D));
+        y2D.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(y2D));
+        //-----------event 3d
+        x3D.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(x3D));
+        y3D.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(y3D));
+        z3D.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(z3D));
+    }
     void Update()
     {
         Debug.Log(panel2DSize);
