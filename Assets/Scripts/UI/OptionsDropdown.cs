@@ -7,7 +7,6 @@ using UnityEngine;
 public class OptionsDropdown : MonoBehaviour
 {
     [SerializeField] RectTransform optDropdown;
-    [SerializeField] TMP_Dropdown algorithmDropdown, modeDropdown;
     [SerializeField] float dropdownSpeed = 700f;
     RectTransform rectTransform;
     float maxHeight = 220f;
@@ -27,10 +26,6 @@ public class OptionsDropdown : MonoBehaviour
             StopCoroutine(dropdownAnimationCoroutine);
         isOpen = !isOpen;
         dropdownAnimationCoroutine = StartCoroutine(DropdownAnimation(isOpen));
-    }
-    public void HandleModeSizeToggle()
-    {
-        string selectedMode = modeDropdown.options[modeDropdown.value].text;
     }
     IEnumerator DropdownAnimation(bool open)
     {

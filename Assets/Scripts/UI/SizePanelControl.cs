@@ -43,11 +43,6 @@ public class SizePanelControl : MonoBehaviour
         y3D.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(y3D));
         z3D.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(z3D));
     }
-    void Update()
-    {
-        Debug.Log(panel2DSize);
-        Debug.Log(panel3DSize);
-    }
     public void HandleSizeToggle()
     {
         string selectedMode = modeDropdown.options[modeDropdown.value].text;
@@ -70,13 +65,16 @@ public class SizePanelControl : MonoBehaviour
             return;
         }
 
+
         if (intInput.transform.parent.tag == "2DSizePanel")
         {
             panel2DSize = new Vector2Int(int.Parse(x2D.text), int.Parse(y2D.text));
+            GameManager.GM.UpdatePanelSize(panel2DSize);
         }
         else
         {
             panel3DSize = new Vector3Int(int.Parse(x3D.text), int.Parse(y3D.text), int.Parse(z3D.text));
+            GameManager.GM.UpdatePanelSize(panel3DSize);
         }
     }
 }
