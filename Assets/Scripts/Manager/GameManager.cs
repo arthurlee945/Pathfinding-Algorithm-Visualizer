@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     public string SelectedAlgo { get; private set; }
     public Vector2Int panel2DSize { get; private set; } = new Vector2Int(100, 100);
     public Vector3Int panel3DSize { get; private set; } = new Vector3Int(100, 100, 100);
+    public SubScene Scene2D { get { return scene2D; } private set { scene2D = value; } }
+    public SubScene Scene3D { get { return scene3D; } private set { scene3D = value; } }
     void Awake()
     {
         if (GM != null && GM != this)
