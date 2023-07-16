@@ -134,9 +134,7 @@ public class CameraController : MonoBehaviour
     {
         Vector2 currMousePos = Mouse.current.position.ReadValue();
         if (Mouse.current.rightButton.wasPressedThisFrame)
-        {
             startingDragPos = currMousePos;
-        }
         Vector2 relativeMousePos = currMousePos - startingDragPos;
         currentRotVector = Vector2.SmoothDamp(currentRotVector, relativeMousePos, ref smoothRotVelocity, smoothInputSpeed);
         mainCamera.transform.eulerAngles = new Vector3(-currentRotVector.y * dragAmount, currentRotVector.x * dragAmount, 0f);

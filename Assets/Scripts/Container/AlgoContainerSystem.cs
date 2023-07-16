@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
-using UnityEngine;
+
 
 public partial class AlgoContainerSystem : SystemBase
 {
@@ -11,7 +9,7 @@ public partial class AlgoContainerSystem : SystemBase
     int3 currentSize3D = new int3(100, 100, 100);
     protected override void OnCreate()
     {
-        // base.OnCreate();
+        ResizeContainer();
 
     }
     protected override void OnUpdate()

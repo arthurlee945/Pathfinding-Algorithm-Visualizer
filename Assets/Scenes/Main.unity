@@ -6118,8 +6118,9 @@ GameObject:
   - component: {fileID: 1531246024}
   - component: {fileID: 1531246026}
   - component: {fileID: 1531246025}
+  - component: {fileID: 1531246027}
   m_Layer: 0
-  m_Name: StateChangeAnnounceText
+  m_Name: StateChangeDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6242,6 +6243,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1531246023}
   m_CullTransparentMesh: 1
+--- !u!114 &1531246027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531246023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14e2323970cf8d4479df27ba2a713705, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultVertexColor: {r: 69, g: 78, b: 91, a: 56}
+  fadeOutSpeed: 0.01
+  fadeOutAmount: 0.2
 --- !u!1 &1561772479
 GameObject:
   m_ObjectHideFlags: 0
@@ -6724,6 +6740,7 @@ MonoBehaviour:
   scene3D: {fileID: 909640149}
   modeDropdown: {fileID: 1822200087}
   algorithmDropdown: {fileID: 1885128944}
+  stateChangeDisplay: {fileID: 1531246025}
 --- !u!1 &1702673966
 GameObject:
   m_ObjectHideFlags: 0

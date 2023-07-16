@@ -16,7 +16,6 @@ public partial class SubSceneLoaderSystem : SystemBase
             currentSceneId = selectedScene;
             HandleSubSceneRender(currentSceneId);
         }
-
     }
 
     void HandleSubSceneRender(string sceneIdentifier)
@@ -26,31 +25,4 @@ public partial class SubSceneLoaderSystem : SystemBase
         SceneSystem.LoadSceneAsync(World.Unmanaged, selectedScene);
         SceneSystem.UnloadScene(World.Unmanaged, unloadableScene);
     }
-
-    /*
-    void HandleSubSceneLoading(string sceneIdentifier)
-    {
-        ResetSceneEntities();
-        var requests = newRequest.ToComponentDataArray<SubSceneLoader>(Allocator.Temp);
-
-        for (int i = 0; i < requests.Length; i++)
-        {
-            EntitySceneReference selectedScene = sceneIdentifier == "2D" ? requests[i].scene2DReference : requests[i].scene3DReference;
-            EntitySceneReference unloadableScene = sceneIdentifier == "2D" ? requests[i].scene3DReference : requests[i].scene2DReference;
-            SceneSystem.LoadSceneAsync(World.Unmanaged, selectedScene);
-            // currentSceneEntities.Add(SceneSystem.LoadSceneAsync(World.Unmanaged, selectedScene));
-        }
-        Debug.Log("Between");
-        requests.Dispose();
-        EntityManager.DestroyEntity(newRequest);
-    }
-    void ResetSceneEntities()
-    {
-        if (currentSceneEntities.Count <= 0) return;
-        foreach (Entity sceneE in currentSceneEntities)
-        {
-            SceneSystem.UnloadScene(World.Unmanaged, sceneE);
-        }
-    }
-    */
 }
