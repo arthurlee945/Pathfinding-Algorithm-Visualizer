@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
+
 public readonly partial struct AlgoContainerAspect : IAspect
 {
     public readonly Entity entity;

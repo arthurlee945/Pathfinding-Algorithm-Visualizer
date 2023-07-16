@@ -6741,6 +6741,7 @@ MonoBehaviour:
   modeDropdown: {fileID: 1822200087}
   algorithmDropdown: {fileID: 1885128944}
   stateChangeDisplay: {fileID: 1531246025}
+  algorithmDisplay: {fileID: 1755576477}
 --- !u!1 &1702673966
 GameObject:
   m_ObjectHideFlags: 0
