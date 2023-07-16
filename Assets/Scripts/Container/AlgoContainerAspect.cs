@@ -26,7 +26,7 @@ public readonly partial struct AlgoContainerAspect : IAspect
     public void ResizeContainer(ref int3 currentSize)
     {
         ContainerMode mode = algoContainer.ValueRO.containerMode;
-        if (currentSize.x == GameManager.GM.panel3DSize.x && currentSize.y == GameManager.GM.panel3DSize.y)
+        if (currentSize.x == GameManager.GM.panel3DSize.x && currentSize.y == GameManager.GM.panel3DSize.y && currentSize.z == GameManager.GM.panel3DSize.z)
             return;
         currentSize = new int3(GameManager.GM.panel3DSize.x, GameManager.GM.panel3DSize.y, GameManager.GM.panel3DSize.z);
 
