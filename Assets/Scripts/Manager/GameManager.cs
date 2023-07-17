@@ -1,6 +1,8 @@
 using TMPro;
 using Unity.Scenes;
+using Unity.Entities;
 using UnityEngine;
+using Unity.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text stateChangeDisplay;
     [SerializeField] TMP_Text algorithmDisplay;
     SceneSystem sceneSystem;
+    Entity zoneManager;
     public ContainerMode SelectedMode { get; private set; } = ContainerMode.Scene2D;
     public Algorithms SelectedAlgo { get; private set; } = Algorithms.BreadthFirstSearch;
     public Vector2Int panel2DSize { get; private set; } = new Vector2Int(100, 100);
@@ -29,12 +32,22 @@ public class GameManager : MonoBehaviour
         }
         GM = this;
         DontDestroyOnLoad(this.gameObject);
-        HandleAlgorithmToggle();
     }
     void OnEnable()
     {
         modeDropdown.onValueChanged.AddListener(func => HandleModeToggle());
         algorithmDropdown.onValueChanged.AddListener(func => HandleAlgorithmToggle());
+    }
+    void Start()
+    {
+        SetZoneManager();
+    }
+    void Update()
+    {
+        if (zoneManager != Entity.Null)
+        {
+            Debug.Log(World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentData<ZoneManager>(zoneManager));
+        }
     }
     void OnDisable()
     {
@@ -86,4 +99,13 @@ public class GameManager : MonoBehaviour
         mainCamera.transform.position = mode == ContainerMode.Scene2D ? new Vector3(-25f, 50, -25) : new Vector3(-50f, 125f, -50f);
         mainCamera.transform.eulerAngles = new Vector3(30, 45, 0);
     }
+    void SetZoneManager()
+    {
+        EntityQuery zoneManagerQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(ZoneManager));
+        NativeArray<Entity> entityArray = zoneManagerQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+        if (entityArray.Length <= 0) return;
+        zoneManager = entityArray[0];
+        Debug.Log(entityArray.Length);
+    }
+
 }

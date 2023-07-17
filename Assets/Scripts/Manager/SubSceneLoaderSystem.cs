@@ -4,6 +4,7 @@ using Unity.Scenes;
 public partial class SubSceneLoaderSystem : SystemBase
 {
     ContainerMode currentSceneId;
+    Entity loadedSceneEntity;
     protected override void OnStartRunning()
     {
         HandleSubSceneRender(currentSceneId);
@@ -22,8 +23,11 @@ public partial class SubSceneLoaderSystem : SystemBase
     void HandleSubSceneRender(ContainerMode sceneIdentifier)
     {
         Hash128 selectedScene = sceneIdentifier == ContainerMode.Scene2D ? GameManager.GM.Scene2D.SceneGUID : GameManager.GM.Scene3D.SceneGUID;
-        Hash128 unloadableScene = sceneIdentifier == ContainerMode.Scene2D ? GameManager.GM.Scene3D.SceneGUID : GameManager.GM.Scene2D.SceneGUID;
-        SceneSystem.LoadSceneAsync(World.Unmanaged, selectedScene);
-        SceneSystem.UnloadScene(World.Unmanaged, unloadableScene);
+        if (loadedSceneEntity != null)
+        {
+            SceneSystem.UnloadScene(World.Unmanaged, loadedSceneEntity);
+            // EntityManager.DestroyEntity(loadedSceneEntity);
+        }
+        loadedSceneEntity = SceneSystem.LoadSceneAsync(World.Unmanaged, selectedScene);
     }
 }

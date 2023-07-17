@@ -6,8 +6,6 @@ using UnityEngine;
 public partial class ZoneManagerSystem : SystemBase
 {
     ContainerMode currentMode;
-    bool isBuilding;
-    public bool IsBuilding { get { return isBuilding; } }
     protected override void OnStartRunning()
     {
         CreateZones(currentMode);
@@ -21,11 +19,9 @@ public partial class ZoneManagerSystem : SystemBase
             currentMode = selectedMode;
             CreateZones(selectedMode);
         }
-
     }
     void CreateZones(ContainerMode mode)
     {
-        isBuilding = true;
         EntityQuery zoneEntityQuery = EntityManager.CreateEntityQuery(typeof(ZoneTag));
         ZoneManager zoneManager = SystemAPI.GetSingleton<ZoneManager>();
         EntityCommandBuffer entityCommandBuffer =
@@ -40,6 +36,5 @@ public partial class ZoneManagerSystem : SystemBase
         {
 
         }
-        isBuilding = false;
     }
 }
