@@ -8,6 +8,7 @@ public struct ZoneManager : IComponentData
 {
     public Entity zone2DPrefab;
     public Entity zone3DPrefab;
+    public bool IsBuilding;
 }
 public class ZoneManagerAuthoring : MonoBehaviour
 {

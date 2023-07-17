@@ -22,6 +22,7 @@ public partial class ZoneManagerSystem : SystemBase
     }
     void CreateZones(ContainerMode mode)
     {
+        GameManager.GM.IsBuilding = true;
         EntityQuery zoneEntityQuery = EntityManager.CreateEntityQuery(typeof(ZoneTag));
         ZoneManager zoneManager = SystemAPI.GetSingleton<ZoneManager>();
         EntityCommandBuffer entityCommandBuffer =
@@ -36,5 +37,6 @@ public partial class ZoneManagerSystem : SystemBase
         {
 
         }
+        GameManager.GM.IsBuilding = false;
     }
 }

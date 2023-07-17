@@ -16,13 +16,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text stateChangeDisplay;
     [SerializeField] TMP_Text algorithmDisplay;
     SceneSystem sceneSystem;
-    Entity zoneManager;
     public ContainerMode SelectedMode { get; private set; } = ContainerMode.Scene2D;
     public Algorithms SelectedAlgo { get; private set; } = Algorithms.BreadthFirstSearch;
     public Vector2Int panel2DSize { get; private set; } = new Vector2Int(100, 100);
     public Vector3Int panel3DSize { get; private set; } = new Vector3Int(100, 100, 100);
-    public SubScene Scene2D { get { return scene2D; } private set { scene2D = value; } }
-    public SubScene Scene3D { get { return scene3D; } private set { scene3D = value; } }
+    public SubScene Scene2D { get { return scene2D; } }
+    public SubScene Scene3D { get { return scene3D; } }
+
     void Awake()
     {
         if (GM != null && GM != this)
@@ -37,17 +37,6 @@ public class GameManager : MonoBehaviour
     {
         modeDropdown.onValueChanged.AddListener(func => HandleModeToggle());
         algorithmDropdown.onValueChanged.AddListener(func => HandleAlgorithmToggle());
-    }
-    void Start()
-    {
-        SetZoneManager();
-    }
-    void Update()
-    {
-        if (zoneManager != Entity.Null)
-        {
-            Debug.Log(World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentData<ZoneManager>(zoneManager));
-        }
     }
     void OnDisable()
     {
@@ -99,13 +88,13 @@ public class GameManager : MonoBehaviour
         mainCamera.transform.position = mode == ContainerMode.Scene2D ? new Vector3(-25f, 50, -25) : new Vector3(-50f, 125f, -50f);
         mainCamera.transform.eulerAngles = new Vector3(30, 45, 0);
     }
-    void SetZoneManager()
-    {
-        EntityQuery zoneManagerQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(ZoneManager));
-        NativeArray<Entity> entityArray = zoneManagerQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
-        if (entityArray.Length <= 0) return;
-        zoneManager = entityArray[0];
-        Debug.Log(entityArray.Length);
-    }
+    // void SetZoneManager()
+    // {
+    //     EntityQuery zoneManagerQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(ZoneManager));
+    //     NativeArray<Entity> entityArray = zoneManagerQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+    //     if (entityArray.Length <= 0) return;
+    //     zoneManager = entityArray[0];
+    //     Debug.Log(entityArray.Length);
+    // }
 
 }
