@@ -29,12 +29,14 @@ public class OptionsDropdown : MonoBehaviour
     }
     IEnumerator DropdownAnimation(bool open)
     {
-        bool criteria = open ? rectTransform.sizeDelta.y <= maxHeight : rectTransform.sizeDelta.y >= optDropdown.sizeDelta.y;
+        bool criteria = open ? rectTransform.sizeDelta.y < maxHeight : rectTransform.sizeDelta.y > optDropdown.sizeDelta.y;
         while (criteria)
         {
             rectTransform.sizeDelta = new Vector2(dropdownWidth, rectTransform.sizeDelta.y + ((open ? 1 : -1) * dropdownSpeed * Time.deltaTime));
             criteria = open ? rectTransform.sizeDelta.y <= maxHeight : rectTransform.sizeDelta.y >= optDropdown.sizeDelta.y;
             yield return new WaitForEndOfFrame();
         }
+        rectTransform.sizeDelta = new Vector2(dropdownWidth, open ? maxHeight : optDropdown.sizeDelta.y);
+
     }
 }

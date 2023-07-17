@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using Unity.Scenes;
 using UnityEngine;
@@ -16,8 +14,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text stateChangeDisplay;
     [SerializeField] TMP_Text algorithmDisplay;
     SceneSystem sceneSystem;
-    public string SelectedMode { get; private set; }
-    public string SelectedAlgo { get; private set; }
+    public ContainerMode SelectedMode { get; private set; } = ContainerMode.Scene2D;
+    public Algorithms SelectedAlgo { get; private set; } = Algorithms.BreadthFirstSearch;
     public Vector2Int panel2DSize { get; private set; } = new Vector2Int(100, 100);
     public Vector3Int panel3DSize { get; private set; } = new Vector3Int(100, 100, 100);
     public SubScene Scene2D { get { return scene2D; } private set { scene2D = value; } }
@@ -46,8 +44,8 @@ public class GameManager : MonoBehaviour
     //-----------dropdown events
     private void HandleModeToggle()
     {
-        SelectedMode = modeDropdown.options[modeDropdown.value].text;
-        if (SelectedMode == "2D")
+        SelectedMode = modeDropdown.options[modeDropdown.value].text == "2D" ? ContainerMode.Scene2D : ContainerMode.Scene3D;
+        if (SelectedMode == ContainerMode.Scene2D)
         {
             panel3DSize = new Vector3Int(100, 100, 100);
             stateChangeDisplay.GetComponent<StateChangeDisplay>().DisplayState("2D Mode");
@@ -61,16 +59,31 @@ public class GameManager : MonoBehaviour
     }
     private void HandleAlgorithmToggle()
     {
-        SelectedAlgo = algorithmDropdown.options[algorithmDropdown.value].text;
-        stateChangeDisplay.GetComponent<StateChangeDisplay>().DisplayState(SelectedAlgo);
-        algorithmDisplay.text = SelectedAlgo;
+        string currSelectedAlgo = algorithmDropdown.options[algorithmDropdown.value].text;
+        switch (currSelectedAlgo)
+        {
+            case "Breadth-First Search":
+                SelectedAlgo = Algorithms.BreadthFirstSearch;
+                break;
+            case "Dijkstra":
+                SelectedAlgo = Algorithms.Dijkstra;
+                break;
+            case "A*":
+                SelectedAlgo = Algorithms.A_star;
+                break;
+            default:
+                SelectedAlgo = Algorithms.BreadthFirstSearch;
+                break;
+        }
+        stateChangeDisplay.GetComponent<StateChangeDisplay>().DisplayState(currSelectedAlgo);
+        algorithmDisplay.text = currSelectedAlgo;
     }
     public void UpdatePanelSize(Vector3Int newPanelSize) => panel3DSize = newPanelSize;
     public void UpdatePanelSize(Vector2Int newPanelSize) => panel2DSize = newPanelSize;
     //------------------------- private funcs
-    void SetCameraOnModeChange(string mode)
+    void SetCameraOnModeChange(ContainerMode mode)
     {
-        mainCamera.transform.position = mode == "2D" ? new Vector3(-25f, 50, -25) : new Vector3(-50f, 125f, -50f);
+        mainCamera.transform.position = mode == ContainerMode.Scene2D ? new Vector3(-25f, 50, -25) : new Vector3(-50f, 125f, -50f);
         mainCamera.transform.eulerAngles = new Vector3(30, 45, 0);
     }
 }

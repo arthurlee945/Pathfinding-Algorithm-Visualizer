@@ -1,27 +1,28 @@
 using Unity.Entities;
 using Unity.Scenes;
+
 public partial class SubSceneLoaderSystem : SystemBase
 {
-    string currentSceneId;
+    ContainerMode currentSceneId;
+    protected override void OnStartRunning()
+    {
+        HandleSubSceneRender(currentSceneId);
+    }
     protected override void OnUpdate()
     {
-        string selectedScene = GameManager.GM.SelectedMode;
-        if (selectedScene == "2D" && currentSceneId != "2D")
-        {
-            currentSceneId = selectedScene;
-            HandleSubSceneRender(currentSceneId);
-        }
-        else if (selectedScene == "3D" && currentSceneId != "3D")
+        ContainerMode selectedScene = GameManager.GM.SelectedMode;
+        if ((selectedScene == ContainerMode.Scene2D && currentSceneId != ContainerMode.Scene2D)
+        || (selectedScene == ContainerMode.Scene3D && currentSceneId != ContainerMode.Scene3D))
         {
             currentSceneId = selectedScene;
             HandleSubSceneRender(currentSceneId);
         }
     }
 
-    void HandleSubSceneRender(string sceneIdentifier)
+    void HandleSubSceneRender(ContainerMode sceneIdentifier)
     {
-        Hash128 selectedScene = sceneIdentifier == "2D" ? GameManager.GM.Scene2D.SceneGUID : GameManager.GM.Scene3D.SceneGUID;
-        Hash128 unloadableScene = sceneIdentifier == "2D" ? GameManager.GM.Scene3D.SceneGUID : GameManager.GM.Scene2D.SceneGUID;
+        Hash128 selectedScene = sceneIdentifier == ContainerMode.Scene2D ? GameManager.GM.Scene2D.SceneGUID : GameManager.GM.Scene3D.SceneGUID;
+        Hash128 unloadableScene = sceneIdentifier == ContainerMode.Scene2D ? GameManager.GM.Scene3D.SceneGUID : GameManager.GM.Scene2D.SceneGUID;
         SceneSystem.LoadSceneAsync(World.Unmanaged, selectedScene);
         SceneSystem.UnloadScene(World.Unmanaged, unloadableScene);
     }

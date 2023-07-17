@@ -10,7 +10,6 @@ public partial class AlgoContainerSystem : SystemBase
     protected override void OnCreate()
     {
         ResizeContainer();
-
     }
     protected override void OnUpdate()
     {

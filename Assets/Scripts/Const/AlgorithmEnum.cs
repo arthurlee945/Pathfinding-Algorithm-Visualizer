@@ -1,4 +1,4 @@
-public enum AlgorithmNames
+public enum Algorithms
 {
     BreadthFirstSearch,
     Dijkstra,
