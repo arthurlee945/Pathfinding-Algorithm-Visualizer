@@ -26,7 +26,6 @@ public partial class SubSceneLoaderSystem : SystemBase
         if (loadedSceneEntity != null)
         {
             SceneSystem.UnloadScene(World.Unmanaged, loadedSceneEntity);
-            // EntityManager.DestroyEntity(loadedSceneEntity);
         }
         loadedSceneEntity = SceneSystem.LoadSceneAsync(World.Unmanaged, selectedScene);
     }

@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
+using Unity.Mathematics;
 
 public partial class ZoneManagerSystem : SystemBase
 {
@@ -16,14 +16,14 @@ public partial class ZoneManagerSystem : SystemBase
         if ((selectedMode == ContainerMode.Scene2D && currentMode != ContainerMode.Scene2D)
         || (selectedMode == ContainerMode.Scene3D && currentMode != ContainerMode.Scene3D))
         {
+            ResetZones(selectedMode);
             currentMode = selectedMode;
             CreateZones(selectedMode);
         }
     }
     void CreateZones(ContainerMode mode)
     {
-        GameManager.GM.IsBuilding = true;
-        EntityQuery zoneEntityQuery = EntityManager.CreateEntityQuery(typeof(ZoneTag));
+        EntityQuery zoneEntityQuery = EntityManager.CreateEntityQuery(typeof(Zone));
         ZoneManager zoneManager = SystemAPI.GetSingleton<ZoneManager>();
         EntityCommandBuffer entityCommandBuffer =
             SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
@@ -31,12 +31,52 @@ public partial class ZoneManagerSystem : SystemBase
         currentMode = GameManager.GM.SelectedMode;
         if (currentMode == ContainerMode.Scene2D)
         {
-            Entity spawnedZone = entityCommandBuffer.Instantiate(zoneManager.zone2DPrefab);
+            int2 currentSize = new int2(GameManager.GM.panel2DSize.x, GameManager.GM.panel2DSize.y);
+            for (int x = 0; x < currentSize.x; x++)
+            {
+                for (int y = 0; y < currentSize.y; y++)
+                {
+                    Entity spawnedZone = entityCommandBuffer.Instantiate(zoneManager.zone2DPrefab);
+                    Zone zoneData = EntityManager.GetComponentData<Zone>(spawnedZone);
+                    zoneData.coordinates = new int2(x, y);
+                }
+            }
         }
         else if (currentMode == ContainerMode.Scene3D)
         {
+            int3 currentSize = new int3(GameManager.GM.panel3DSize.x, GameManager.GM.panel3DSize.y, GameManager.GM.panel3DSize.z);
 
+            for (int x = 0; x < currentSize.x; x++)
+            {
+                for (int y = 0; y < currentSize.y; y++)
+                {
+                    for (int z = 0; z < currentSize.z; z++)
+                    {
+                        // Entity spawnedZone = entityCommandBuffer.Instantiate(zoneManager.zone2DPrefab);
+                        // spawnedZones.Add(spawnedZone);
+                        // Zone zoneData = EntityManager.GetComponentData<Zone>(spawnedZone);
+                    }
+                }
+            }
         }
-        GameManager.GM.IsBuilding = false;
+    }
+    void ResetZones(ContainerMode selectedMode)
+    {
+        EntityCommandBuffer entityCommandBuffer =
+            SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        ZoneManager zoneManager = SystemAPI.GetSingleton<ZoneManager>();
+        NativeArray<Entity> zoneEntities = zoneManager.zones.GetValueArray(Allocator.Temp);
+        entityCommandBuffer.DestroyEntity(zoneEntities);
+        zoneManager.zones.Clear();
+        if (selectedMode == ContainerMode.Scene2D)
+        {
+            zoneManager.mode3DStart = new int3(0, 0, 0);
+            zoneManager.mode3DEnd = new int3(GameManager.GM.panel3DSize.x, GameManager.GM.panel3DSize.y, GameManager.GM.panel3DSize.z);
+        }
+        else
+        {
+            zoneManager.mode2DStart = new int2(0, 0);
+            zoneManager.mode2DEnd = new int2(GameManager.GM.panel2DSize.x, GameManager.GM.panel2DSize.y);
+        }
     }
 }
