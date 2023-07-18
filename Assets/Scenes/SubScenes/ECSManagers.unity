@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 469156455}
   - component: {fileID: 469156456}
   m_Layer: 0
-  m_Name: ZoneSpawner
+  m_Name: ZoneManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -96,5 +96,4 @@ public class GameManager : MonoBehaviour
     //     zoneManager = entityArray[0];
     //     Debug.Log(entityArray.Length);
     // }
-
 }

@@ -6,7 +6,7 @@ public struct Node
 {
     public int2 coordinates;
     public bool isWalkable, isExplored, isPath;
-    public Entity connectedTo;
+    public int2 connectedTo;
 
     public Node(int2 coordinates, bool isWalkable = true)
     {
@@ -15,6 +15,6 @@ public struct Node
         this.isExplored = false;
         this.isWalkable = false;
         this.isPath = false;
-        connectedTo = Entity.Null;
+        connectedTo = coordinates;
     }
 }
