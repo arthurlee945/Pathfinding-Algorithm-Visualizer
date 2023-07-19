@@ -5,11 +5,18 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+
+
+// change to isystem and implement IJobEntity
 [BurstCompile]
 public partial class ZoneManagerSystem : SystemBase
 {
     ContainerMode currentMode;
-
+    EntityManager entityManager;
+    protected override void OnCreate()
+    {
+        entityManager = new EntityManager();
+    }
     [BurstCompile]
     protected override void OnStartRunning()
     {
@@ -23,6 +30,7 @@ public partial class ZoneManagerSystem : SystemBase
         if ((selectedMode == ContainerMode.Scene2D && currentMode != ContainerMode.Scene2D)
         || (selectedMode == ContainerMode.Scene3D && currentMode != ContainerMode.Scene3D))
         {
+            UnityEngine.Debug.Log("FIre");
             ResetZones(selectedMode);
             currentMode = selectedMode;
             CreateZones(selectedMode);
@@ -31,14 +39,27 @@ public partial class ZoneManagerSystem : SystemBase
     [BurstCompile]
     void CreateZones(ContainerMode mode)
     {
-        EntityQuery zoneEntityQuery = EntityManager.CreateEntityQuery(typeof(Zone));
         ZoneManager zoneManager = SystemAPI.GetSingleton<ZoneManager>();
+
         currentMode = GameManager.GM.SelectedMode;
-        int neededZones = currentMode == ContainerMode.Scene2D ? GameManager.GM.panel2DSize.x * GameManager.GM.panel2DSize.y
-        : GameManager.GM.panel3DSize.x * GameManager.GM.panel3DSize.y * GameManager.GM.panel3DSize.z;
+
+        EntityQuery zoneEntityQuery;
+        int neededZones;
+        if (currentMode == ContainerMode.Scene2D)
+        {
+            zoneEntityQuery = EntityManager.CreateEntityQuery(typeof(Zone2D));
+            neededZones = GameManager.GM.panel2DSize.x * GameManager.GM.panel2DSize.y;
+        }
+        else
+        {
+            zoneEntityQuery = EntityManager.CreateEntityQuery(typeof(Zone3D));
+            neededZones = GameManager.GM.panel3DSize.x * GameManager.GM.panel3DSize.y * GameManager.GM.panel3DSize.z;
+        }
+
         if (zoneEntityQuery.CalculateEntityCount() >= neededZones && currentMode == GameManager.GM.SelectedMode) return;
 
-        EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        // EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+        // EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob, PlaybackPolicy.MultiPlayback);
 
         if (currentMode == ContainerMode.Scene2D)
         {
@@ -47,20 +68,18 @@ public partial class ZoneManagerSystem : SystemBase
             {
                 for (int y = 0; y < currentSize.y; y++)
                 {
-                    Entity spawnedZone = ecb.Instantiate(zoneManager.zone2DPrefab);
-                    // Zone zoneData = EntityManager.GetComponentData<Zone>(spawnedZone);
-                    // zoneData.coordinates = new int2(x, y);
-                    LocalToWorld ltw = EntityManager.GetComponentData<LocalToWorld>(spawnedZone);
-                    // float4x4 newPos = new float4x4(ltw.Value.Rotation(), new float3(x, 0.2f, y));
-                    // ecb.SetComponent(spawnedZone, new LocalToWorld()
-                    // {
-                    //     Value = newPos
-                    // });
-                    // EntityManager.SetComponentData<LocalToWorld>(spawnedZone, new LocalToWorld()
-                    // {
-                    //     Value = newPos
-                    // });
 
+                    Entity spawnedZone = EntityManager.Instantiate(zoneManager.zone2DPrefab);
+                    EntityManager.AddComponentData<Zone2D>(spawnedZone, new Zone2D()
+                    {
+                        coordinates = new int2(x, y),
+                    });
+                    EntityManager.AddComponentData<LocalTransform>(spawnedZone, new LocalTransform
+                    {
+                        Position = new float3(x + 0.5f, 0.1f, y + 0.5f),
+                        Scale = 1f,
+                        Rotation = quaternion.identity
+                    });
                 }
             }
         }
@@ -74,9 +93,17 @@ public partial class ZoneManagerSystem : SystemBase
                 {
                     for (int z = 0; z < currentSize.z; z++)
                     {
-                        // Entity spawnedZone = entityCommandBuffer.Instantiate(zoneManager.zone2DPrefab);
-                        // spawnedZones.Add(spawnedZone);
-                        // Zone zoneData = EntityManager.GetComponentData<Zone>(spawnedZone);
+                        Entity spawnedZone = EntityManager.Instantiate(zoneManager.zone3DPrefab);
+                        EntityManager.AddComponentData<Zone3D>(spawnedZone, new Zone3D()
+                        {
+                            coordinates = new int3(x, y, z),
+                        });
+                        EntityManager.AddComponentData<LocalTransform>(spawnedZone, new LocalTransform
+                        {
+                            Position = new float3(x + 0.5f, y + 0.5f, z + 0.5f),
+                            Scale = 1f,
+                            Rotation = quaternion.identity
+                        });
                     }
                 }
             }
@@ -85,21 +112,16 @@ public partial class ZoneManagerSystem : SystemBase
     }
     void ResetZones(ContainerMode selectedMode)
     {
-        // EntityCommandBuffer ecb =
-        //     SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-        // ZoneManager zoneManager = SystemAPI.GetSingleton<ZoneManager>();
-
-        // zoneManager.zones.Clear();
+        EntityQuery prevZones;
+        if (selectedMode == ContainerMode.Scene2D)
+        {
+            prevZones = EntityManager.CreateEntityQuery(typeof(Zone3D));
+        }
+        else
+        {
+            prevZones = EntityManager.CreateEntityQuery(typeof(Zone2D));
+        }
+        EntityManager.DestroyEntity(prevZones);
     }
 }
 
-
-// public partial struct InstantiateZoneJob : IJobEntity
-// {
-//     public float DeltaTime;
-//     public int2 coordinates;
-//     private void Execute()
-//     {
-
-//     }
-// }

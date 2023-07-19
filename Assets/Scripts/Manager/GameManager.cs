@@ -8,7 +8,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager GM { get; private set; }
     [SerializeField] Camera mainCamera;
-    [SerializeField] SubScene scene2D, scene3D;
+    // [SerializeField] SubScene scene2D, scene3D;
+    // [SerializeField] Entity playzone2D, playzone3D;
     [Header("Dropdown Fields")]
     [SerializeField] TMP_Dropdown modeDropdown;
     [SerializeField] TMP_Dropdown algorithmDropdown;
@@ -20,8 +21,8 @@ public class GameManager : MonoBehaviour
     public Algorithms SelectedAlgo { get; private set; } = Algorithms.BreadthFirstSearch;
     public Vector2Int panel2DSize { get; private set; } = new Vector2Int(100, 100);
     public Vector3Int panel3DSize { get; private set; } = new Vector3Int(100, 100, 100);
-    public SubScene Scene2D { get { return scene2D; } }
-    public SubScene Scene3D { get { return scene3D; } }
+    // public SubScene Scene2D { get { return scene2D; } }
+    // public SubScene Scene3D { get { return scene3D; } }
 
     void Awake()
     {

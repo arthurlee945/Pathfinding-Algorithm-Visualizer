@@ -14,10 +14,6 @@ public struct ZoneManager : IComponentData
     // public NativeHashMap<int2, Entity> zones;
     // public NativeList<Entity> test;
 }
-public struct ZoneSpawnTimer : IComponentData
-{
-    public float value;
-}
 public class ZoneManagerAuthoring : MonoBehaviour
 {
     public GameObject zone2DPrefab;
@@ -29,8 +25,8 @@ public class ZoneManagerAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new ZoneManager
             {
-                zone2DPrefab = GetEntity(authoring.zone2DPrefab, TransformUsageFlags.None),
-                zone3DPrefab = GetEntity(authoring.zone3DPrefab, TransformUsageFlags.None),
+                zone2DPrefab = GetEntity(authoring.zone2DPrefab, TransformUsageFlags.Renderable),
+                zone3DPrefab = GetEntity(authoring.zone3DPrefab, TransformUsageFlags.Renderable),
                 // zones = new NativeHashMap<int2, Entity>(),
             });
         }
