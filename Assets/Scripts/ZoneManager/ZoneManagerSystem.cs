@@ -5,18 +5,10 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-
-
-// change to isystem and implement IJobEntity
 [BurstCompile]
 public partial class ZoneManagerSystem : SystemBase
 {
     ContainerMode currentMode;
-    EntityManager entityManager;
-    protected override void OnCreate()
-    {
-        entityManager = new EntityManager();
-    }
     [BurstCompile]
     protected override void OnStartRunning()
     {
@@ -30,7 +22,6 @@ public partial class ZoneManagerSystem : SystemBase
         if ((selectedMode == ContainerMode.Scene2D && currentMode != ContainerMode.Scene2D)
         || (selectedMode == ContainerMode.Scene3D && currentMode != ContainerMode.Scene3D))
         {
-            UnityEngine.Debug.Log("FIre");
             ResetZones(selectedMode);
             currentMode = selectedMode;
             CreateZones(selectedMode);
@@ -58,23 +49,52 @@ public partial class ZoneManagerSystem : SystemBase
 
         if (zoneEntityQuery.CalculateEntityCount() >= neededZones && currentMode == GameManager.GM.SelectedMode) return;
 
-        // EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
-        // EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob, PlaybackPolicy.MultiPlayback);
+        // NativeArray<Entity> zones = new NativeArray<Entity>(neededZones, Allocator.Temp);
 
-        if (currentMode == ContainerMode.Scene2D)
+        int3 currentSize = currentMode == ContainerMode.Scene2D ?
+            new int3(GameManager.GM.panel2DSize.x, GameManager.GM.panel2DSize.y, 0) :
+            new int3(GameManager.GM.panel3DSize.x, GameManager.GM.panel3DSize.y, GameManager.GM.panel3DSize.z);
+        EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
+
+        for (int x = 0; x < currentSize.x; x++)
         {
-            int2 currentSize = new int2(GameManager.GM.panel2DSize.x, GameManager.GM.panel2DSize.y);
-            for (int x = 0; x < currentSize.x; x++)
+            for (int y = 0; y < currentSize.y; y++)
             {
-                for (int y = 0; y < currentSize.y; y++)
+
+                if (currentMode == ContainerMode.Scene3D)
                 {
 
-                    Entity spawnedZone = EntityManager.Instantiate(zoneManager.zone2DPrefab);
-                    EntityManager.AddComponentData<Zone2D>(spawnedZone, new Zone2D()
+                    for (int z = 0; z < currentSize.z; z++)
+                    {
+                        // new CreateZoneJob
+                        // {
+                        //     currentMode = currentMode,
+                        //     coor = new int3(x, y, z),
+                        //     entityManager = EntityManager,
+                        //     zonePrefab = zoneManager.zone3DPrefab
+                        // }.Run();
+
+                        Entity spawnedZone = ecb.Instantiate(zoneManager.zone3DPrefab);
+                        ecb.SetComponent<Zone3D>(spawnedZone, new Zone3D()
+                        {
+                            coordinates = new int3(x, y, z),
+                        });
+                        ecb.SetComponent<LocalTransform>(spawnedZone, new LocalTransform
+                        {
+                            Position = new float3(x + 0.5f, y + 0.5f, z + 0.5f),
+                            Scale = 1f,
+                            Rotation = quaternion.identity
+                        });
+                    }
+                }
+                else
+                {
+                    Entity spawnedZone = ecb.Instantiate(zoneManager.zone2DPrefab);
+                    ecb.SetComponent<Zone2D>(spawnedZone, new Zone2D()
                     {
                         coordinates = new int2(x, y),
                     });
-                    EntityManager.AddComponentData<LocalTransform>(spawnedZone, new LocalTransform
+                    ecb.SetComponent<LocalTransform>(spawnedZone, new LocalTransform
                     {
                         Position = new float3(x + 0.5f, 0.1f, y + 0.5f),
                         Scale = 1f,
@@ -83,32 +103,43 @@ public partial class ZoneManagerSystem : SystemBase
                 }
             }
         }
-        else if (currentMode == ContainerMode.Scene3D)
+        // zones.Dispose();
+    }
+
+    [BurstCompile]
+    public partial struct CreateZoneJob : IJobEntity
+    {
+        public int3 coor;
+        public Entity zonePrefab;
+        public ContainerMode currentMode;
+        public void Execute(ZoneManager zoneManger)
         {
-            int3 currentSize = new int3(GameManager.GM.panel3DSize.x, GameManager.GM.panel3DSize.y, GameManager.GM.panel3DSize.z);
-
-            for (int x = 0; x < currentSize.x; x++)
+            UnityEngine.Debug.Log("EGILSEGHLESIG");
+            EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+            Entity spawnedZone = ecb.Instantiate(zonePrefab);
+            if (currentMode == ContainerMode.Scene2D)
             {
-                for (int y = 0; y < currentSize.y; y++)
+                ecb.AddComponent<Zone2D>(spawnedZone, new Zone2D()
                 {
-                    for (int z = 0; z < currentSize.z; z++)
-                    {
-                        Entity spawnedZone = EntityManager.Instantiate(zoneManager.zone3DPrefab);
-                        EntityManager.AddComponentData<Zone3D>(spawnedZone, new Zone3D()
-                        {
-                            coordinates = new int3(x, y, z),
-                        });
-                        EntityManager.AddComponentData<LocalTransform>(spawnedZone, new LocalTransform
-                        {
-                            Position = new float3(x + 0.5f, y + 0.5f, z + 0.5f),
-                            Scale = 1f,
-                            Rotation = quaternion.identity
-                        });
-                    }
-                }
+                    coordinates = new int2(coor.x, coor.y),
+                });
             }
+            else
+            {
+                ecb.AddComponent<Zone3D>(spawnedZone, new Zone3D()
+                {
+                    coordinates = coor,
+                });
+            }
+            ecb.AddComponent<LocalTransform>(spawnedZone, new LocalTransform
+            {
+                Position = currentMode == ContainerMode.Scene2D ?
+                new float3(coor.x + 0.5f, 0.1f, coor.y + 0.5f) : new float3(coor.x + 0.5f, coor.y + 0.5f, coor.z + 0.5f),
+                Scale = 1f,
+                Rotation = quaternion.identity
+            });
+            ecb.Dispose();
         }
-
     }
     void ResetZones(ContainerMode selectedMode)
     {
@@ -124,4 +155,5 @@ public partial class ZoneManagerSystem : SystemBase
         EntityManager.DestroyEntity(prevZones);
     }
 }
+
 

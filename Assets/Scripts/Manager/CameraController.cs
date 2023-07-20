@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] float defaultMoveSpeed = 10f;
     [SerializeField] float fastMoveSpeed = 20f;
     Vector2 currentInputMovementVector, smoothInputVelocity;
+    Vector3 initCameraAngle;
     //-------------Zoom Fields
     [Header("Camera Zoom Fields")]
     [SerializeField] InputAction mouseScrollInput;
@@ -134,9 +135,12 @@ public class CameraController : MonoBehaviour
     {
         Vector2 currMousePos = Mouse.current.position.ReadValue();
         if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
             startingDragPos = currMousePos;
+            initCameraAngle = mainCamera.transform.eulerAngles;
+        }
         Vector2 relativeMousePos = currMousePos - startingDragPos;
         currentRotVector = Vector2.SmoothDamp(currentRotVector, relativeMousePos, ref smoothRotVelocity, smoothInputSpeed);
-        mainCamera.transform.eulerAngles = new Vector3(-currentRotVector.y * dragAmount, currentRotVector.x * dragAmount, 0f);
+        mainCamera.transform.eulerAngles = initCameraAngle + new Vector3(-currentRotVector.y * dragAmount, currentRotVector.x * dragAmount, 0f);
     }
 }
