@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3142278254942988436}
   - component: {fileID: 750557419295594937}
   - component: {fileID: 3888495258738398718}
-  - component: {fileID: -206737313691530486}
+  - component: {fileID: 8457874173535746564}
   m_Layer: 0
   m_Name: Zone2DPrefab
   m_TagString: Untagged
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-206737313691530486
+--- !u!114 &8457874173535746564
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,9 +93,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8343292851565838186}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1756110a36a62394a9baa795459da050, type: 3}
+  m_Script: {fileID: 11500000, guid: c31115ad0ccf50c40ac279527fb42248, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   coordinates:
     x: 0
     y: 0
+    z: 0

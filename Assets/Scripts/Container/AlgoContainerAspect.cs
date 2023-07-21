@@ -5,9 +5,8 @@ using Unity.Transforms;
 public readonly partial struct AlgoContainerAspect : IAspect
 {
     public readonly Entity entity;
-    public readonly RefRO<AlgoContainer> algoContainer;
+    public readonly RefRO<AlgoContainerComponent> algoContainer;
     private readonly RefRW<LocalToWorld> transform;
-
 
     public void ResizeContainer(ref int2 currentSize)
     {

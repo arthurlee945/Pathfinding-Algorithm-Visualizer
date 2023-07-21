@@ -21,7 +21,7 @@ public partial class PlaygroundLoaderSystem : SystemBase
 
     void HandleSubSceneRender(ContainerMode sceneIdentifier)
     {
-        PlaygroundLoader zoneManager = SystemAPI.GetSingleton<PlaygroundLoader>();
+        PlaygroundLoaderComponent zoneManager = SystemAPI.GetSingleton<PlaygroundLoaderComponent>();
         if (loadedPlayground != Entity.Null)
         {
             EntityManager.DestroyEntity(loadedPlayground);

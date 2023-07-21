@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-public struct AlgoContainer : IComponentData
+public struct AlgoContainerComponent : IComponentData
 {
     public ContainerMode containerMode;
 }
 
-public class AlgoContainerAuthoring : MonoBehaviour
+public class AlgoContainer : MonoBehaviour
 {
     public ContainerMode containerMode;
-    class Baker : Baker<AlgoContainerAuthoring>
+    class Baker : Baker<AlgoContainer>
     {
-        public override void Bake(AlgoContainerAuthoring authoring)
+        public override void Bake(AlgoContainer authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new AlgoContainer
+            AddComponent(entity, new AlgoContainerComponent
             {
                 containerMode = authoring.containerMode
             });

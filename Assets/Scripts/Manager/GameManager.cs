@@ -8,21 +8,17 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager GM { get; private set; }
     [SerializeField] Camera mainCamera;
-    // [SerializeField] SubScene scene2D, scene3D;
-    // [SerializeField] Entity playzone2D, playzone3D;
     [Header("Dropdown Fields")]
     [SerializeField] TMP_Dropdown modeDropdown;
     [SerializeField] TMP_Dropdown algorithmDropdown;
     [Header("Display Text")]
     [SerializeField] TMP_Text stateChangeDisplay;
     [SerializeField] TMP_Text algorithmDisplay;
-    SceneSystem sceneSystem;
+
     public ContainerMode SelectedMode { get; private set; } = ContainerMode.Scene2D;
     public Algorithms SelectedAlgo { get; private set; } = Algorithms.BreadthFirstSearch;
     public Vector2Int panel2DSize { get; private set; } = new Vector2Int(100, 100);
     public Vector3Int panel3DSize { get; private set; } = new Vector3Int(100, 100, 100);
-    // public SubScene Scene2D { get { return scene2D; } }
-    // public SubScene Scene3D { get { return scene3D; } }
 
     void Awake()
     {
@@ -32,7 +28,6 @@ public class GameManager : MonoBehaviour
             return;
         }
         GM = this;
-        DontDestroyOnLoad(this.gameObject);
     }
     void OnEnable()
     {
@@ -89,12 +84,4 @@ public class GameManager : MonoBehaviour
         mainCamera.transform.position = mode == ContainerMode.Scene2D ? new Vector3(-25f, 50, -25) : new Vector3(-50f, 125f, -50f);
         mainCamera.transform.eulerAngles = new Vector3(30, 45, 0);
     }
-    // void SetZoneManager()
-    // {
-    //     EntityQuery zoneManagerQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(ZoneManager));
-    //     NativeArray<Entity> entityArray = zoneManagerQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
-    //     if (entityArray.Length <= 0) return;
-    //     zoneManager = entityArray[0];
-    //     Debug.Log(entityArray.Length);
-    // }
 }
