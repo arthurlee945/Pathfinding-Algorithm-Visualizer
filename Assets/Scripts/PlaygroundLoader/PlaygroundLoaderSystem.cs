@@ -21,11 +21,11 @@ public partial class PlaygroundLoaderSystem : SystemBase
 
     void HandleSubSceneRender(ContainerMode sceneIdentifier)
     {
-        PlaygroundLoaderComponent zoneManager = SystemAPI.GetSingleton<PlaygroundLoaderComponent>();
+        PlaygroundLoaderComponent pgLoader = SystemAPI.GetSingleton<PlaygroundLoaderComponent>();
         if (loadedPlayground != Entity.Null)
         {
             EntityManager.DestroyEntity(loadedPlayground);
         }
-        loadedPlayground = EntityManager.Instantiate(sceneIdentifier == ContainerMode.Scene2D ? zoneManager.playground2D : zoneManager.playground3D);
+        loadedPlayground = EntityManager.Instantiate(sceneIdentifier == ContainerMode.Scene2D ? pgLoader.playground2D : pgLoader.playground3D);
     }
 }

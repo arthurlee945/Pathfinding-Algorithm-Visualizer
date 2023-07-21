@@ -3,11 +3,11 @@ using TMPro;
 
 public class SizePanelControl : MonoBehaviour
 {
-
     [SerializeField] TMP_Dropdown modeDropdown;
     [SerializeField] GameObject panel2D, panel3D;
-    [SerializeField] int minSize = 10;
-    [SerializeField] int maxSize = 2000;
+    [SerializeField] int minSize = 1;
+    [SerializeField] int max2DSize = 200;
+    [SerializeField] int max3DSize = 100;
     [Header("Panel Vectors 2D")]
     [SerializeField] TMP_InputField x2D;
     [SerializeField] TMP_InputField y2D;
@@ -58,8 +58,9 @@ public class SizePanelControl : MonoBehaviour
         int value;
         bool parseInt = int.TryParse(intInput.text, out value);
         if (!parseInt) value = 100;
-        int clampedValue = Mathf.Clamp(value, minSize, maxSize);
-        if (value > maxSize || value < minSize)
+        int maxValue = intInput.transform.parent.tag == "2DSizePanel" ? max2DSize : max3DSize;
+        int clampedValue = Mathf.Clamp(value, minSize, maxValue);
+        if (value > maxValue || value < minSize)
         {
             intInput.text = clampedValue.ToString();
             return;

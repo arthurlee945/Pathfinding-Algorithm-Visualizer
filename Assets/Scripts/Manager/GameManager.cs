@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     public ContainerMode SelectedMode { get; private set; } = ContainerMode.Scene2D;
     public Algorithms SelectedAlgo { get; private set; } = Algorithms.BreadthFirstSearch;
     public Vector2Int panel2DSize { get; private set; } = new Vector2Int(100, 100);
-    public Vector3Int panel3DSize { get; private set; } = new Vector3Int(100, 100, 100);
+    public Vector3Int panel3DSize { get; private set; } = new Vector3Int(50, 50, 50);
 
     void Awake()
     {
@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
         SelectedMode = modeDropdown.options[modeDropdown.value].text == "2D" ? ContainerMode.Scene2D : ContainerMode.Scene3D;
         if (SelectedMode == ContainerMode.Scene2D)
         {
-            panel3DSize = new Vector3Int(100, 100, 100);
+            panel3DSize = new Vector3Int(50, 50, 50);
             stateChangeDisplay.GetComponent<StateChangeDisplay>().DisplayState("2D Mode");
         }
         else
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
     //------------------------- private funcs
     void SetCameraOnModeChange(ContainerMode mode)
     {
-        mainCamera.transform.position = mode == ContainerMode.Scene2D ? new Vector3(-25f, 50, -25) : new Vector3(-50f, 125f, -50f);
+        mainCamera.transform.position = mode == ContainerMode.Scene2D ? new Vector3(-25f, 50, -25) : new Vector3(-35f, 75f, -35f);
         mainCamera.transform.eulerAngles = new Vector3(30, 45, 0);
     }
 }

@@ -7,7 +7,7 @@ using Unity.Mathematics;
 public partial class AlgoContainerSystem : SystemBase
 {
     int2 currentSize2D = new int2(100, 100);
-    int3 currentSize3D = new int3(100, 100, 100);
+    int3 currentSize3D = new int3(50, 50, 50);
     protected override void OnCreate()
     {
         ResizeContainer();

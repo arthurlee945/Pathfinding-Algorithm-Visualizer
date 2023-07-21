@@ -13,6 +13,7 @@ public class OptionsDropdown : MonoBehaviour
     float dropdownWidth;
     bool isOpen;
     Coroutine dropdownAnimationCoroutine;
+
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();

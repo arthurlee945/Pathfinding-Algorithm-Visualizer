@@ -101,7 +101,7 @@ public class CameraController : MonoBehaviour
         if (currentDragVector.x != 0 || currentDragVector.y != 0)
             currentDragVector = Vector2.zero;
         if (currentRotVector.x != 0 || currentRotVector.y != 0)
-            currentDragVector = Vector2.zero;
+            currentRotVector = Vector2.zero;
         if (!isDefault)
         {
             IconHandler("default");
