@@ -7,7 +7,7 @@ using Unity.Transforms;
 [BurstCompile]
 public partial class ZoneManagerSystem : SystemBase
 {
-    ContainerMode currentMode;
+    int2 currentDimension;
     [BurstCompile]
     protected override void OnStartRunning()
     {
@@ -16,15 +16,13 @@ public partial class ZoneManagerSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
-        ContainerMode selectedMode = GameManager.GM.SelectedMode;
-        if ((selectedMode == ContainerMode.Scene2D && currentMode != ContainerMode.Scene2D)
-        || (selectedMode == ContainerMode.Scene3D && currentMode != ContainerMode.Scene3D))
+        if (currentDimension.x == GameManager.GM.panelSize.x && currentDimension.y != GameManager.GM.panelSize.y)
         {
             ResetZones();
-            currentMode = selectedMode;
             CreateZones();
         }
     }
+    [BurstCompile]
     void CreateZones()
     {
         if (EntityManager.CreateEntityQuery(typeof(ZoneComponent)).CalculateEntityCount() > 0) return;
@@ -32,7 +30,33 @@ public partial class ZoneManagerSystem : SystemBase
         ZoneManagerComponent zm = SystemAPI.GetSingleton<ZoneManagerComponent>();
         ECSSceneManager.CreateZones((coor) =>
         {
-            Entity prefab = currentMode == ContainerMode.Scene2D ? zm.zone2DPrefab : zm.zone3DPrefab;
+            Entity entity = ecb.Instantiate(zm.zonePrefab);
+            ecb.SetComponent(entity, new ZoneComponent
+            {
+                coordinates = coor,
+            });
+            ecb.SetComponent<LocalTransform>(entity, new LocalTransform
+            {
+                Position = new float3(coor.x + 0.5f, 0.2f, coor.y + 0.5f),
+                Scale = 1f,
+                Rotation = quaternion.identity
+            });
+        });
+    }
+    [BurstCompile]
+    void ResetZones()
+    {
+        EntityQuery prevZones = EntityManager.CreateEntityQuery(typeof(ZoneComponent));
+        EntityManager.DestroyEntity(prevZones);
+    }
+    [BurstCompile]
+    public partial struct CreateZoneJob : IJobEntity
+    {
+        EntityCommandBuffer ecb;
+        Entity prefab;
+        int2 coor;
+        public void Execute()
+        {
             Entity entity = ecb.Instantiate(prefab);
             ecb.SetComponent(entity, new ZoneComponent
             {
@@ -40,16 +64,10 @@ public partial class ZoneManagerSystem : SystemBase
             });
             ecb.SetComponent<LocalTransform>(entity, new LocalTransform
             {
-                Position = currentMode == ContainerMode.Scene2D ? new float3(coor.x + 0.5f, 0.2f, coor.y + 0.5f) : new float3(coor.x + 0.5f, coor.y + 0.5f, coor.z + 0.5f),
+                Position = new float3(coor.x + 0.5f, 0.2f, coor.y + 0.5f),
                 Scale = 1f,
                 Rotation = quaternion.identity
             });
-        });
+        }
     }
-    void ResetZones()
-    {
-        EntityQuery prevZones = EntityManager.CreateEntityQuery(typeof(ZoneComponent));
-        EntityManager.DestroyEntity(prevZones);
-    }
-
 }

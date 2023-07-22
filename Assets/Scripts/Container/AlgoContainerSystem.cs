@@ -20,15 +20,7 @@ public partial class AlgoContainerSystem : SystemBase
     {
         foreach (AlgoContainerAspect algoContainerAspect in SystemAPI.Query<AlgoContainerAspect>())
         {
-            ContainerMode mode = algoContainerAspect.algoContainer.ValueRO.containerMode;
-            if (mode == ContainerMode.Scene2D)
-            {
-                algoContainerAspect.ResizeContainer(ref currentSize2D);
-            }
-            else if (mode == ContainerMode.Scene3D)
-            {
-                algoContainerAspect.ResizeContainer(ref currentSize3D);
-            }
+            algoContainerAspect.ResizeContainer(ref currentSize2D);
         }
     }
 }

@@ -17,28 +17,15 @@ public class ECSSceneManager : MonoBehaviour
         Instance = this;
     }
 
-    public static void CreateZones(Action<int3> action)
+    public static void CreateZones(Action<int2> action)
     {
-        ContainerMode currentMode = GameManager.GM.SelectedMode;
-        int3 currentSize = currentMode == ContainerMode.Scene2D ?
-        new int3(GameManager.GM.panel2DSize.x, GameManager.GM.panel2DSize.y, 0) :
-        new int3(GameManager.GM.panel3DSize.x, GameManager.GM.panel3DSize.y, GameManager.GM.panel3DSize.z);
-
+        // ContainerMode currentMode = GameManager.GM.SelectedMode;
+        int2 currentSize = new int2(GameManager.GM.panelSize.x, GameManager.GM.panelSize.y);
         for (int x = 0; x < currentSize.x; x++)
         {
             for (int y = 0; y < currentSize.y; y++)
             {
-                if (currentMode == ContainerMode.Scene3D)
-                {
-                    for (int z = 0; z < currentSize.z; z++)
-                    {
-                        action(new int3(x, y, z));
-                    }
-                }
-                else
-                {
-                    action(new int3(x, y, 0));
-                }
+                action(new int2(x, y));
             }
         }
     }

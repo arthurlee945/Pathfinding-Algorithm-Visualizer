@@ -6,14 +6,12 @@ using UnityEngine;
 
 public struct ZoneManagerComponent : IComponentData
 {
-    public Entity zone2DPrefab;
-    public Entity zone3DPrefab;
+    public Entity zonePrefab;
 
 }
 public class ZoneManager : MonoBehaviour
 {
-    public GameObject zone2DPrefab;
-    public GameObject zone3DPrefab;
+    public GameObject zonePrefab;
 
     class Baker : Baker<ZoneManager>
     {
@@ -23,8 +21,7 @@ public class ZoneManager : MonoBehaviour
 
             AddComponent(entity, new ZoneManagerComponent
             {
-                zone2DPrefab = GetEntity(authoring.zone2DPrefab, TransformUsageFlags.Renderable),
-                zone3DPrefab = GetEntity(authoring.zone3DPrefab, TransformUsageFlags.Renderable),
+                zonePrefab = GetEntity(authoring.zonePrefab, TransformUsageFlags.Renderable),
             });
         }
     }
