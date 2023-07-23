@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 750557419295594937}
   - component: {fileID: 3888495258738398718}
   - component: {fileID: 2523270781129798867}
+  - component: {fileID: 5566791737827406090}
   - component: {fileID: 8457874173535746564}
   m_Layer: 0
   m_Name: ZonePrefab
@@ -228,6 +229,27 @@ MonoBehaviour:
         Tag07: 0
     m_SerializedVersion: 1
   m_SerializedVersion: 1
+--- !u!65 &5566791737827406090
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8343292851565838186}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8457874173535746564
 MonoBehaviour:
   m_ObjectHideFlags: 0

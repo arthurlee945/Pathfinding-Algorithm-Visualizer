@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -46,7 +47,20 @@ public partial class ZoneManagerSystem : SystemBase
                 Rotation = quaternion.identity
             });
             //------ add collider
+            BoxGeometry bg = new BoxGeometry()
+            {
+                BevelRadius = 0,
+                Center = new float3(0, 0, 0),
+                Size = new float3(1, 1, 1),
+                Orientation = quaternion.identity,
+            };
+            // ecb.SetComponent<PhysicsCollider>(entity, new PhysicsCollider
+            // {
+            //     Value = Unity.Physics.BoxCollider.Create(bg, CollisionFilter.Default)
+            // });
+            // EntityManager.SetComponentData(entity, new PhysicsCollider {
 
+            // });
             return entity;
         });
     }
