@@ -46,21 +46,6 @@ public partial class ZoneManagerSystem : SystemBase
                 Scale = 1f,
                 Rotation = quaternion.identity
             });
-            //------ add collider
-            BoxGeometry bg = new BoxGeometry()
-            {
-                BevelRadius = 0,
-                Center = new float3(0, 0, 0),
-                Size = new float3(1, 1, 1),
-                Orientation = quaternion.identity,
-            };
-            // ecb.SetComponent<PhysicsCollider>(entity, new PhysicsCollider
-            // {
-            //     Value = Unity.Physics.BoxCollider.Create(bg, CollisionFilter.Default)
-            // });
-            // EntityManager.SetComponentData(entity, new PhysicsCollider {
-
-            // });
             return entity;
         });
     }
@@ -73,7 +58,7 @@ public partial class ZoneManagerSystem : SystemBase
     }
 }
 
-
+/*
 [BurstCompile]
 public partial struct CreateZoneJob : IJobEntity
 {
@@ -94,3 +79,4 @@ public partial struct CreateZoneJob : IJobEntity
         });
     }
 }
+*/

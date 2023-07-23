@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using RaycastHit = Unity.Physics.RaycastHit;
@@ -24,11 +25,17 @@ public partial class ZoneSelectionSystem : SystemBase
     {
         var ray = mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
         var rayStart = ray.origin;
-        var rayEnd = ray.GetPoint(100f);
+        var rayEnd = ray.GetPoint(500f);
 
         if (Raycast(rayStart, rayEnd, out var hit))
         {
-            UnityEngine.Debug.Log(hit.Entity);
+            ZoneComponent zc = EntityManager.GetComponentData<ZoneComponent>(hit.Entity);
+            if (!zc.isWalkable) return;
+            URPMaterialPropertyBaseColor baseColor = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hit.Entity);
+            EntityManager.AddComponentData<URPMaterialPropertyBaseColor>(hit.Entity, new URPMaterialPropertyBaseColor
+            {
+                Value = new float4(0, 0, 0, 1)
+            });
         }
     }
 
