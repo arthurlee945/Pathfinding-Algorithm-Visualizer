@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -11,16 +12,12 @@ using RaycastHit = Unity.Physics.RaycastHit;
 public partial class ZoneSelectionSystem : SystemBase
 {
     Camera mainCam;
-    BuildPhysicsWorld buildPhysicsWorld;
+    PhysicsWorldSingleton buildPhysicsWorld;
     CollisionWorld collisionWorld;
     protected override void OnCreate()
     {
         mainCam = Camera.main;
-        // SystemHandle bpw = World.GetOrCreateSystem<BuildPhysicsWorld>();
-        // buildPhysicsWorld = new BuildPhysicsWorld().;
-        // World.DefaultGameObjectInjectionWorld.GetExistingSystem<CollisionWorld>();
-        // new CollisionWorld().
-        collisionWorld = new CollisionWorld();
+
 
     }
     protected override void OnUpdate()
@@ -29,9 +26,29 @@ public partial class ZoneSelectionSystem : SystemBase
         var rayStart = ray.origin;
         var rayEnd = ray.GetPoint(100f);
 
+        if (Raycast(rayStart, rayEnd, out var hit))
+        {
+            UnityEngine.Debug.Log(hit.Entity);
+        }
     }
-    // private bool Raycast(float3 rayStart, float3 rayEnd, out RaycastHit raycastHit)
-    // {
 
-    // }
+    private bool Raycast(float3 RayFrom, float3 RayTo, out RaycastHit hit)
+    {
+        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>();
+        EntityQuery singletonQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(builder);
+        var collisionWorld = singletonQuery.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+        singletonQuery.Dispose();
+
+        RaycastInput input = new RaycastInput()
+        {
+            Start = RayFrom,
+            End = RayTo,
+            Filter = new CollisionFilter()
+            {
+                BelongsTo = (uint)CollisionLayers.Zones,
+                CollidesWith = ~0u,
+            }
+        };
+        return collisionWorld.CastRay(input, out hit);
+    }
 }
