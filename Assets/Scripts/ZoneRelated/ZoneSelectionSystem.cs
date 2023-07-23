@@ -18,8 +18,6 @@ public partial class ZoneSelectionSystem : SystemBase
     protected override void OnCreate()
     {
         mainCam = Camera.main;
-
-
     }
     protected override void OnUpdate()
     {
