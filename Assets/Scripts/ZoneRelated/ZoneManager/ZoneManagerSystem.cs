@@ -33,12 +33,13 @@ public partial class ZoneManagerSystem : SystemBase
         if (EntityManager.CreateEntityQuery(typeof(ZoneComponent)).CalculateEntityCount() > 2) return;
         EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         ZoneManagerComponent zm = SystemAPI.GetSingleton<ZoneManagerComponent>();
-        ECSManager.CreateZones((coor) =>
+        GridManager.CreateZones((coor) =>
         {
             Entity entity = ecb.Instantiate(zm.zonePrefab);
             ecb.SetComponent(entity, new ZoneComponent
             {
                 coordinates = coor,
+                isWalkable = true,
             });
             ecb.SetComponent<LocalTransform>(entity, new LocalTransform
             {
@@ -52,7 +53,7 @@ public partial class ZoneManagerSystem : SystemBase
     [BurstCompile]
     void ResetZones()
     {
-        ECSManager.Zones.Clear();
+        GridManager.Zones.Clear();
         EntityQuery prevZones = EntityManager.CreateEntityQuery(typeof(ZoneComponent));
         EntityManager.DestroyEntity(prevZones);
     }

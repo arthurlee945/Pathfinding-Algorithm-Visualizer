@@ -5,9 +5,9 @@ using Unity.Mathematics;
 using Unity.Entities;
 using System.Collections.Generic;
 
-public class ECSManager : MonoBehaviour
+public class GridManager : MonoBehaviour
 {
-    public static ECSManager Instance { get; private set; }
+    public static GridManager Instance { get; private set; }
     public static Dictionary<Vector2Int, Entity> Zones = new Dictionary<Vector2Int, Entity>();
     void Awake()
     {

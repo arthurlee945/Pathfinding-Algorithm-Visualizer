@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text stateChangeDisplay;
     [SerializeField] TMP_Text algorithmDisplay;
     public Algorithms SelectedAlgo { get; private set; } = Algorithms.BreadthFirstSearch;
-    public Vector2Int panelSize { get; private set; } = new Vector2Int(100, 100);
+    public Vector2Int panelSize { get; private set; } = new Vector2Int(50, 50);
 
     void Awake()
     {

@@ -35,8 +35,8 @@ public class SizePanelControl : MonoBehaviour
         bool parseInt = int.TryParse(intInput.text, out value);
         if (!parseInt)
         {
-            value = 100;
-            intInput.text = "100";
+            value = 50;
+            intInput.text = "50";
         };
         int clampedValue = Mathf.Clamp(value, minSize, maxSize);
         if (value > maxSize || value < minSize)

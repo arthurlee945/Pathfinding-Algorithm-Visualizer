@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using UnityEngine;
 
 public struct ZoneComponent : IComponentData
@@ -19,7 +20,10 @@ public class Zone : MonoBehaviour
             AddComponent(entity, new ZoneComponent
             {
                 coordinates = authoring.coordinates,
-                isWalkable = true,
+            });
+            AddComponent(entity, new URPMaterialPropertyBaseColor
+            {
+                Value = new float4(1, 1, 1, 1)
             });
         }
     }
