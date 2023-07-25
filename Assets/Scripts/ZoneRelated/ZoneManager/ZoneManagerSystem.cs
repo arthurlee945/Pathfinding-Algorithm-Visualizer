@@ -1,11 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
-using Unity.Rendering;
 using Unity.Transforms;
-using UnityEngine;
-using UnityEngine.InputSystem;
 
 [BurstCompile]
 public partial class ZoneManagerSystem : SystemBase
@@ -33,27 +29,28 @@ public partial class ZoneManagerSystem : SystemBase
         if (EntityManager.CreateEntityQuery(typeof(ZoneComponent)).CalculateEntityCount() > 2) return;
         EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         ZoneManagerComponent zm = SystemAPI.GetSingleton<ZoneManagerComponent>();
-        GridManager.CreateZones((coor) =>
+        ZoneStore.Instance.CreateZones((coor) =>
         {
-            Entity entity = ecb.Instantiate(zm.zonePrefab);
-            ecb.SetComponent(entity, new ZoneComponent
+            Entity entity = EntityManager.Instantiate(zm.zonePrefab);
+            EntityManager.SetComponentData<ZoneComponent>(entity, new ZoneComponent
             {
                 coordinates = coor,
                 isWalkable = true,
             });
-            ecb.SetComponent<LocalTransform>(entity, new LocalTransform
+            EntityManager.SetComponentData<LocalTransform>(entity, new LocalTransform
             {
                 Position = new float3(coor.x + 0.5f, 0.2f, coor.y + 0.5f),
                 Scale = 1f,
                 Rotation = quaternion.identity
             });
+
             return entity;
         });
     }
     [BurstCompile]
     void ResetZones()
     {
-        GridManager.Zones.Clear();
+        ZoneStore.Instance.Zones.Clear();
         EntityQuery prevZones = EntityManager.CreateEntityQuery(typeof(ZoneComponent));
         EntityManager.DestroyEntity(prevZones);
     }

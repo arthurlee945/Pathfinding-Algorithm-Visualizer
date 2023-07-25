@@ -7,7 +7,7 @@ public struct ZoneComponent : IComponentData
 {
     public int2 coordinates;
     public bool isWalkable, isExplored, isPath;
-    Entity connectedTo;
+    public Entity connectedTo;
 }
 public class Zone : MonoBehaviour
 {
@@ -20,6 +20,7 @@ public class Zone : MonoBehaviour
             AddComponent(entity, new ZoneComponent
             {
                 coordinates = authoring.coordinates,
+                isWalkable = true,
             });
             AddComponent(entity, new URPMaterialPropertyBaseColor
             {

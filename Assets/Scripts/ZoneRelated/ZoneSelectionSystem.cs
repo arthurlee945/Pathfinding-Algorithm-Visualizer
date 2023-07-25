@@ -15,6 +15,7 @@ public partial class ZoneSelectionSystem : SystemBase
     CollisionWorld collisionWorld;
     ZoneManagerComponent zoneManager;
     Entity hoveredZone;
+    Entity pressedZone;
     protected override void OnCreate()
     {
         mainCam = Camera.main;
@@ -33,29 +34,36 @@ public partial class ZoneSelectionSystem : SystemBase
         if (Raycast(rayStart, rayEnd, out var hit))
         {
             ZoneComponent zc = EntityManager.GetComponentData<ZoneComponent>(hit.Entity);
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            if (Mouse.current.leftButton.isPressed)
             {
+                if (pressedZone == hit.Entity) return;
                 zc.isWalkable = !zc.isWalkable;
                 EntityManager.SetComponentData<ZoneComponent>(hit.Entity, zc);
                 URPMaterialPropertyBaseColor clickedBC = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hit.Entity);
                 clickedBC.Value = zc.isWalkable ? zoneManager.defaultColor : zoneManager.notWalkableColor;
                 EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hit.Entity, clickedBC);
+                pressedZone = hit.Entity;
             }
             else
             {
-                if (!zc.isWalkable || hoveredZone == hit.Entity) return;
+
                 if (hoveredZone != hit.Entity && hoveredZone != Entity.Null && EntityManager.GetComponentData<ZoneComponent>(hoveredZone).isWalkable)
                 {
                     URPMaterialPropertyBaseColor prevBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hoveredZone);
                     prevBc.Value = zoneManager.defaultColor;
                     EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hoveredZone, prevBc);
                 }
-
+                if (!zc.isWalkable || hoveredZone == hit.Entity) return;
                 URPMaterialPropertyBaseColor newBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hit.Entity);
                 newBc.Value = zoneManager.hoverColor;
                 EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hit.Entity, newBc);
                 hoveredZone = hit.Entity;
             }
+        }
+        else if (hoveredZone != Entity.Null || pressedZone != Entity.Null)
+        {
+            pressedZone = Entity.Null;
+            hoveredZone = Entity.Null;
         }
     }
 

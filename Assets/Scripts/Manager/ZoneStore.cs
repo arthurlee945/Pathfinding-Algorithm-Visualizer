@@ -5,10 +5,11 @@ using Unity.Mathematics;
 using Unity.Entities;
 using System.Collections.Generic;
 
-public class GridManager : MonoBehaviour
+public class ZoneStore : MonoBehaviour
 {
-    public static GridManager Instance { get; private set; }
-    public static Dictionary<Vector2Int, Entity> Zones = new Dictionary<Vector2Int, Entity>();
+    public static ZoneStore Instance { get; private set; }
+    public Entity startZone, endZone;
+    public Dictionary<Vector2Int, Entity> Zones = new Dictionary<Vector2Int, Entity>();
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -22,7 +23,7 @@ public class GridManager : MonoBehaviour
     {
         Zones.Clear();
     }
-    public static void CreateZones(Func<int2, Entity> action)
+    public void CreateZones(Func<int2, Entity> action)
     {
         int2 currentSize = new int2(GameManager.GM.panelSize.x, GameManager.GM.panelSize.y);
         for (int x = 0; x < currentSize.x; x++)

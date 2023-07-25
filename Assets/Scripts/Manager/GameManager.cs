@@ -54,5 +54,9 @@ public class GameManager : MonoBehaviour
         stateChangeDisplay.GetComponent<StateChangeDisplay>().DisplayState(currSelectedAlgo);
         algorithmDisplay.text = currSelectedAlgo;
     }
-    public void UpdatePanelSize(Vector2Int newPanelSize) => panelSize = newPanelSize;
+    public void UpdatePanelSize(Vector2Int newPanelSize)
+    {
+        panelSize = newPanelSize;
+        mainCamera.transform.position = new Vector3(panelSize.x / 2, 50, panelSize.y / 2);
+    }
 }
