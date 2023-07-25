@@ -20,11 +20,13 @@ class BreadthFirstSearch{
     {
         isRunning = IsRunning;
         isRunning = true;
-        CleanUp();
         this.startCoors = startCoors;
         this.endCoors = endCoors;
         startZone = ZoneStore.Instance.Zones[startCoors];
         endZone = ZoneStore.Instance.Zones[endCoors];
+        //------------------Start Prep
+        frontier.Clear();
+        reached.Clear();
         //------------------Start Running the Algo
         Algorithm();
     }
@@ -97,10 +99,9 @@ class BreadthFirstSearch{
             zc.isPath = true;
             entityManager.SetComponentData<ZoneComponent>(currentZone, zc);
         }
+        if(path[0] == null || path[0] == endZone){
+            //return something or validate this on the other class;
+        }
         return path.Reverse();
-    }
-    void CleanUp(){
-        eQueue.Clear();
-        reached.Clear();
     }
 }

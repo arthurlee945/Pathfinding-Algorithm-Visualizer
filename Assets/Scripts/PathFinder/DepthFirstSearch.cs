@@ -23,6 +23,9 @@ class DepthFirstSearch{
         this.endCoors = endCoors;
         startZone = ZoneStore.Instance.Zones[startCoors];
         endZone = ZoneStore.Instance.Zones[endCoors];
+        //------------------Start Prep
+        frontier.Clear();
+        reached.Clear();
         //------------------Start Running the Algo
         Algorithm();
     }

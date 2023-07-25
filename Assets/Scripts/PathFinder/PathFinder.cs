@@ -94,4 +94,13 @@ public class PathFinder : MonoBehaviour
     {
 
     }
+
+    public void ResetZones(){
+        foreach(Entity e in ZoneStore.Instance.Zones.Values){
+            ZoneComponent zc = entityManager.GetComponentData<ZoneComponent>(e);
+            zc.isPath = false;
+            zc.isExplored = false;
+            entityManager.SetComponentData<ZoneComponent>(e, zc);
+        }
+    }
 }
