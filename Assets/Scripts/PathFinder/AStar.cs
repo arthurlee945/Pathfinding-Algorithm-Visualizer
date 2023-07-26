@@ -4,26 +4,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-class AStar{
+public class AStar : MonoBehaviour
+{
     EntityManager entityManager;
     Vector2Int startCoors, endCoors;
     Entity startZone, endZone, currentSearchZone;
-    ref bool isRunning;
-
-    public AStar(EntityManager entityManager){
-        this.entityManager = entityManager;
+    void Awake()
+    {
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
-    public void FindPath(Vector2Int startCoor, Vector2Int endCoor, ref bool IsRunning){
-        isRunning = IsRunning;
+    public void FindPath(Vector2Int startCoors, Vector2Int endCoors, ref bool isRunning)
+    {
         isRunning = true;
         this.startCoors = startCoors;
         this.endCoors = endCoors;
         startZone = ZoneStore.Instance.Zones[startCoors];
         endZone = ZoneStore.Instance.Zones[endCoors];
         //--------------------run algorithm
-        Algorithm();
+        Algorithm(ref isRunning);
     }
-    void Algorithm(){
+    void Algorithm(ref bool isRunning)
+    {
 
     }
 }

@@ -7,6 +7,7 @@ public struct ZoneComponent : IComponentData
 {
     public int2 coordinates;
     public bool isWalkable, isExplored, isPath;
+    public bool isStart, isEnd;
     public Entity connectedTo;
 }
 public class Zone : MonoBehaviour

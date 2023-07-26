@@ -170,10 +170,12 @@ MonoBehaviour:
   zonePrefab: {fileID: 8343292851565838186, guid: ab3ef2b616b7307458f826bb5ec49387,
     type: 3}
   defaultColor: {r: 1, g: 1, b: 1, a: 0}
-  hoverColor: {r: 0.53475434, g: 0.5720786, b: 0.5754717, a: 0}
+  hoverColor: {r: 0.54, g: 0.58, b: 0.58, a: 0}
   notWalkableColor: {r: 0, g: 0, b: 0, a: 1}
-  exploredColor: {r: 0.5411765, g: 0.75008994, b: 1, a: 0}
-  pathColor: {r: 0.3796979, g: 0.8773585, b: 0.376602, a: 0}
+  exploredColor: {r: 0.54, g: 0.75, b: 1, a: 0}
+  pathColor: {r: 0.38, g: 0.88, b: 0.38, a: 0}
+  startColor: {r: 0.8207547, g: 0.127759, b: 0.127759, a: 0}
+  endColor: {r: 0.09011213, g: 0.14562133, b: 0.764151, a: 0}
 --- !u!1001 &566660019
 PrefabInstance:
   m_ObjectHideFlags: 0

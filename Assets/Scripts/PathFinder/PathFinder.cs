@@ -2,21 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PathFinder : MonoBehaviour
 {
-    public PathFinder Instance { get; private set; }
-    [SerializeField] Vector2Int startCoors, endCoors;
+    public static PathFinder Instance { get; private set; }
+    public Vector2Int startCoors, endCoors;
+    [SerializeField] float searchSpeed = 0.0005f;
     EntityManager entityManager;
-    Entity startZone, endZone, currentSearchZone;
-    Dictionary<Vector2Int, Entity> reached = new Dictionary<Vector2Int, Entity>();
-    Queue<Entity> frontier = new Queue<Entity>();
-    //---------Breadth First Search Dir
-    Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
-    public bool IsRunning { get; private set; }
+    BreadthFirstSearch bfs;
+    DepthFirstSearch dfs;
+    public bool IsRunning { get; set; }
+    public bool IsPreview { get; set; }
+    public Vector2Int StartCoors { get { return startCoors; } set { startCoors = value; } }
+    public Vector2Int EndCoors { get { return endCoors; } set { endCoors = value; } }
+    public float SearchSpeed { get { return searchSpeed; } }
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -26,6 +29,11 @@ public class PathFinder : MonoBehaviour
         }
         Instance = this;
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        bfs = GetComponent<BreadthFirstSearch>();
+    }
+    void Start()
+    {
+        SetStartAndEndPoint();
     }
     void Update()
     {
@@ -36,71 +44,51 @@ public class PathFinder : MonoBehaviour
     }
     public void StartFindPath()
     {
-        IsRunning = true;
         if (!ZoneStore.Instance.Zones.ContainsKey(startCoors)) startCoors = new Vector2Int(0, 0);
-        if (!ZoneStore.Instance.Zones.ContainsKey(endCoors)) endCoors = GameManager.GM.panelSize;
-        startZone = ZoneStore.Instance.Zones[startCoors];
-        endZone = ZoneStore.Instance.Zones[endCoors];
-        frontier.Clear();
-        reached.Clear();
-        if (GameManager.GM.SelectedAlgo == Algorithms.BreadthFirstSearch) BreadthFirstSearch();
-        IsRunning = false;
+        if (!ZoneStore.Instance.Zones.ContainsKey(endCoors)) endCoors = (GameManager.GM.panelSize - new Vector2Int(1, 1));
+        if (GameManager.GM.SelectedAlgo == Algorithms.BreadthFirstSearch) bfs.FindPath(startCoors, endCoors);
     }
-
-    //---------------------BreadthFirstSearch Methods
-    void BreadthFirstSearch()
+    public void SetStartAndEndPoint()
     {
-        frontier.Enqueue(startZone);
-        reached.Add(startCoors, startZone);
-
-        while (frontier.Count > 0 && IsRunning)
+        if (startCoors.x > GameManager.GM.panelSize.x || startCoors.y > GameManager.GM.panelSize.y)
         {
-            currentSearchZone = frontier.Dequeue();
-            ZoneComponent currZC = entityManager.GetComponentData<ZoneComponent>(currentSearchZone);
-            currZC.isExplored = true;
-            entityManager.SetComponentData<ZoneComponent>(currentSearchZone, currZC);
-            ExploreNeighbors();
-            if (new Vector2Int(currZC.coordinates.x, currZC.coordinates.y) != endCoors) continue;
+            startCoors = new Vector2Int(0, 0);
+            Entity startZone = ZoneStore.Instance.Zones[startCoors];
+            ZoneComponent zc = entityManager.GetComponentData<ZoneComponent>(startZone);
+            zc.isWalkable = false;
+            zc.isStart = true;
+            entityManager.SetComponentData<URPMaterialPropertyBaseColor>(startZone, new URPMaterialPropertyBaseColor
+            {
+                Value = StateColors.Instance.StartColor
+            });
+        }
+        if (endCoors.x > GameManager.GM.panelSize.x || endCoors.y > GameManager.GM.panelSize.y)
+        {
+            endCoors = (GameManager.GM.panelSize - new Vector2Int(1, 1));
+            Entity endZone = ZoneStore.Instance.Zones[endCoors];
+            ZoneComponent zc = entityManager.GetComponentData<ZoneComponent>(endZone);
+            zc.isWalkable = false;
+            zc.isStart = true;
+            entityManager.SetComponentData<URPMaterialPropertyBaseColor>(endZone, new URPMaterialPropertyBaseColor
+            {
+                Value = StateColors.Instance.StartColor
+            });
         }
     }
-    void ExploreNeighbors()
+    public void ResetZones()
     {
-        foreach (Vector2Int dir in directions)
+        foreach (Entity e in ZoneStore.Instance.Zones.Values)
         {
-            ZoneComponent currZC = entityManager.GetComponentData<ZoneComponent>(currentSearchZone);
-            Vector2Int neighborCoor = new Vector2Int(currZC.coordinates.x, currZC.coordinates.y) + dir;
-            if (!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
-            Entity neighbor = ZoneStore.Instance.Zones[neighborCoor];
-            ZoneComponent neighborZC = entityManager.GetComponentData<ZoneComponent>(neighbor);
-            Vector2Int neightborCoor = new Vector2Int(neighborZC.coordinates.x, neighborZC.coordinates.y);
-
-            if (reached.ContainsKey(neightborCoor) || !neighborZC.isWalkable) continue;
-            neighborZC.connectedTo = currentSearchZone;
-            entityManager.SetComponentData<ZoneComponent>(neighbor, neighborZC);
-            reached.Add(neightborCoor, neighbor);
-            frontier.Enqueue(neighbor);
-        }
-    }
-
-    //---------------------Dijkstra Methods
-
-    void Dijkstra()
-    {
-
-    }
-
-    //---------------------AStar Methods
-    void AStar()
-    {
-
-    }
-
-    public void ResetZones(){
-        foreach(Entity e in ZoneStore.Instance.Zones.Values){
             ZoneComponent zc = entityManager.GetComponentData<ZoneComponent>(e);
+            zc.isWalkable = true;
             zc.isPath = false;
             zc.isExplored = false;
             entityManager.SetComponentData<ZoneComponent>(e, zc);
+            if (zc.isStart || zc.isEnd) continue;
+            URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
+            baseColor.Value = StateColors.Instance.DefaultColor;
+            entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
         }
+        PathFinder.Instance.IsPreview = false;
     }
 }

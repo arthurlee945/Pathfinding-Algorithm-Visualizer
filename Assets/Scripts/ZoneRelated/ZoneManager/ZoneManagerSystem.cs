@@ -1,7 +1,9 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
+using UnityEngine;
 
 [BurstCompile]
 public partial class ZoneManagerSystem : SystemBase
@@ -27,15 +29,17 @@ public partial class ZoneManagerSystem : SystemBase
     void CreateZones()
     {
         if (EntityManager.CreateEntityQuery(typeof(ZoneComponent)).CalculateEntityCount() > 2) return;
-        EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(World.Unmanaged);
         ZoneManagerComponent zm = SystemAPI.GetSingleton<ZoneManagerComponent>();
         ZoneStore.Instance.CreateZones((coor) =>
         {
             Entity entity = EntityManager.Instantiate(zm.zonePrefab);
+
             EntityManager.SetComponentData<ZoneComponent>(entity, new ZoneComponent
             {
                 coordinates = coor,
                 isWalkable = true,
+                isStart = new Vector2Int(coor.x, coor.y) == PathFinder.Instance.StartCoors,
+                isEnd = new Vector2Int(coor.x, coor.y) == PathFinder.Instance.EndCoors
             });
             EntityManager.SetComponentData<LocalTransform>(entity, new LocalTransform
             {
@@ -44,6 +48,17 @@ public partial class ZoneManagerSystem : SystemBase
                 Rotation = quaternion.identity
             });
 
+            if (new Vector2Int(coor.x, coor.y) == PathFinder.Instance.StartCoors)
+                EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(entity, new URPMaterialPropertyBaseColor
+                {
+                    Value = StateColors.Instance.StartColor
+                });
+
+            if (new Vector2Int(coor.x, coor.y) == PathFinder.Instance.EndCoors)
+                EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(entity, new URPMaterialPropertyBaseColor
+                {
+                    Value = StateColors.Instance.EndColor
+                });
             return entity;
         });
     }

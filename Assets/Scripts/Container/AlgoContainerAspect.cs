@@ -19,5 +19,6 @@ public readonly partial struct AlgoContainerAspect : IAspect
         float4 r3 = new float4(currentSize.x / 2, 0.1f, currentSize.y / 2, 1);
         float4x4 newScaledSize = new float4x4(r0, r1, r2, r3);
         transform.ValueRW.Value = newScaledSize;
+        PathFinder.Instance.SetStartAndEndPoint();
     }
 }

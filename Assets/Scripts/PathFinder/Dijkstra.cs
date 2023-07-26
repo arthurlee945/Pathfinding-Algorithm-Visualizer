@@ -4,19 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-class Dijkstra{
+public class Dijkstra : MonoBehaviour
+{
     EntityManager entityManager;
     Vector2Int startCoors, endCoors;
     Entity startZone, endZone, currentSearchZone;
     Dictionary<int, Entity> reachedVertex = new Dictionary<int, Entity>();
-    ref bool isRunning;
 
-    public Dijkstra(EntityManager entityManager){
-        this.entityManager = entityManager;
+    void Awake()
+    {
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
 
-    public void FindPath(Vector2Int startCoor, Vector2Int endCoor, ref bool IsRunning){
-        isRunning = IsRunning;
+    public void FindPath(Vector2Int startCoors, Vector2Int endCoors, ref bool isRunning)
+    {
         isRunning = true;
         this.startCoors = startCoors;
         this.endCoors = endCoors;
@@ -25,9 +26,10 @@ class Dijkstra{
         //-------------------- start prep
         reachedVertex.Clear();
         //--------------------run algorithm
-        Algorithm();
+        Algorithm(ref isRunning);
     }
-    void Algorithm(){
+    void Algorithm(ref bool isRunning)
+    {
 
     }
 }

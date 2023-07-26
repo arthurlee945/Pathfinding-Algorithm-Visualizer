@@ -3,32 +3,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
+using Unity.Rendering;
 
-class BreadthFirstSearch{
+public class BreadthFirstSearch : MonoBehaviour
+{
     EntityManager entityManager;
     Vector2Int startCoors, endCoors;
     Entity startZone, endZone, currentSearchZone;
     Dictionary<Vector2Int, Entity> reached = new Dictionary<Vector2Int, Entity>();
     Queue<Entity> eQueue = new Queue<Entity>();
     Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-    ref bool isRunning;
-    public float SearchSpeed { get; set; } = 0.02f;
-    public BreadthFirstSearch(EntityManager entityManager){
-        this.entityManager = entityManager;
-    }
-    public void FindPath(Vector2Int startCoors, Vector2Int endCoors, ref bool IsRunning)
+    void Awake()
     {
-        isRunning = IsRunning;
-        isRunning = true;
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+    }
+    public void FindPath(Vector2Int startCoors, Vector2Int endCoors)
+    {
+        PathFinder.Instance.IsRunning = true;
         this.startCoors = startCoors;
         this.endCoors = endCoors;
         startZone = ZoneStore.Instance.Zones[startCoors];
         endZone = ZoneStore.Instance.Zones[endCoors];
         //------------------Start Prep
-        frontier.Clear();
+        eQueue.Clear();
         reached.Clear();
         //------------------Start Running the Algo
-        Algorithm();
+        // Algorithm();
+        StartCoroutine(Algorithm());
     }
 
     /// <summary>
@@ -48,60 +49,81 @@ class BreadthFirstSearch{
     ///              Q.enqueue(w)
     /// </code>
     /// </summary>
-    
-    void Algorithm()
+
+    IEnumerator Algorithm()
     {
         eQueue.Enqueue(startZone);
         reached.Add(startCoors, startZone);
-
+        bool isRunning = true;
         while (eQueue.Count > 0 && isRunning)
         {
             currentSearchZone = eQueue.Dequeue();
             ZoneComponent currZC = entityManager.GetComponentData<ZoneComponent>(currentSearchZone);
             currZC.isExplored = true;
             entityManager.SetComponentData<ZoneComponent>(currentSearchZone, currZC);
-
-            StartCoroutine(ExploreNeighbors());
-            if (new Vector2Int(currZC.coordinates.x, currZC.coordinates.y) != endCoors) continue;
+            //----------------------Set Explored Color
+            if (currentSearchZone != startZone && currentSearchZone != endZone)
+            {
+                URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone);
+                baseColor.Value = StateColors.Instance.ExploredColor;
+                entityManager.SetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone, baseColor);
+            }
+            //-----------------------
+            ExploreNeighbors();
+            yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
+            if (currentSearchZone != endZone) continue;
             //------------------End Algo
             isRunning = false;
         }
+        //-------------display path
+        foreach (Entity e in BuildPath())
+        {
+            URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
+            baseColor.Value = StateColors.Instance.PathColor;
+            entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
+            yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
+        }
+        PathFinder.Instance.IsRunning = false;
+        PathFinder.Instance.IsPreview = true;
     }
 
-    IEnumerator ExploreNeighbors()
+    void ExploreNeighbors()
     {
         foreach (Vector2Int dir in directions)
         {
             ZoneComponent currZC = entityManager.GetComponentData<ZoneComponent>(currentSearchZone);
             Vector2Int neighborCoor = new Vector2Int(currZC.coordinates.x, currZC.coordinates.y) + dir;
+
             if (!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
             Entity neighbor = ZoneStore.Instance.Zones[neighborCoor];
             ZoneComponent neighborZC = entityManager.GetComponentData<ZoneComponent>(neighbor);
-            Vector2Int neightborCoor = new Vector2Int(neighborZC.coordinates.x, neighborZC.coordinates.y);
 
-            if (reached.ContainsKey(neightborCoor) || !neighborZC.isWalkable) continue;
+            if (reached.ContainsKey(neighborCoor) || !neighborZC.isWalkable) continue;
             neighborZC.connectedTo = currentSearchZone;
             entityManager.SetComponentData<ZoneComponent>(neighbor, neighborZC);
-            reached.Add(neightborCoor, neighbor);
+            reached.Add(neighborCoor, neighbor);
             eQueue.Enqueue(neighbor);
-            yield return new WaitForSeconds(SearchSpeed);
         }
     }
 
-    List<Entity> BuildPath(){
+    List<Entity> BuildPath()
+    {
         List<Entity> path = new List<Entity>();
         Entity currentZone = endZone;
         ZoneComponent zc = entityManager.GetComponentData<ZoneComponent>(currentZone);
-        while(zc.connectedTo != Entity.Null){
+        while (zc.connectedTo != Entity.Null)
+        {
             currentZone = zc.connectedTo;
             path.Add(currentZone);
             zc = entityManager.GetComponentData<ZoneComponent>(currentZone);
             zc.isPath = true;
             entityManager.SetComponentData<ZoneComponent>(currentZone, zc);
         }
-        if(path[0] == null || path[0] == endZone){
+        if (path[0] == null || path[0] == endZone)
+        {
             //return something or validate this on the other class;
         }
-        return path.Reverse();
+        path.Reverse();
+        return path;
     }
 }
