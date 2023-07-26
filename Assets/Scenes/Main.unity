@@ -3530,7 +3530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startCoors: {x: 5, y: 5}
   endCoors: {x: 44, y: 44}
-  searchSpeed: 0.001
+  searchSpeed: 0.0001
 --- !u!4 &1391320918
 Transform:
   m_ObjectHideFlags: 0
@@ -5204,6 +5204,8 @@ MonoBehaviour:
   m_Options:
     m_Options:
     - m_Text: Breadth-First Search
+      m_Image: {fileID: 0}
+    - m_Text: Depth-First Search
       m_Image: {fileID: 0}
     - m_Text: Dijkstra
       m_Image: {fileID: 0}

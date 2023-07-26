@@ -8,7 +8,7 @@ using Unity.Rendering;
 public class Dijkstra : MonoBehaviour
 {
     EntityManager entityManager;
-    Vector2Int startCoors,endCoors;
+    Vector2Int startCoors, endCoors;
     Entity startZone, endZone, currentSearchZone;
     List<Entity> unvisited = new List<Entity>();
     HashSet<Entity> visited = new HashSet<Entity>();
@@ -29,19 +29,22 @@ public class Dijkstra : MonoBehaviour
         visited.Clear();
         unvisited.Clear();
         //--------------------run algorithm
-        Algorithm();
+        StartCoroutine(Algorithm());
     }
-    void Algorithm()
+    IEnumerator Algorithm()
     {
         unvisited.Add(startZone);
-        isRunning = true;
-        while(unvisited.Count>0 && isRunning){
+        bool isRunning = true;
+        while (unvisited.Count > 0 && isRunning)
+        {
             currentSearchZone = unvisited[0];
-            
+
             ZoneComponent currentSearchZC = entityManager.GetComponentData<ZoneComponent>(currentSearchZone);
-            for(int i = 1; i < unvisited.Count; i++){
-                ZoneComponent otherZC = entityManager.GetComponent<ZoneComponent>(unvisited[i]);
-                if(otherZC.gCost <= currentSearchZC.gCost){
+            for (int i = 1; i < unvisited.Count; i++)
+            {
+                ZoneComponent otherZC = entityManager.GetComponentData<ZoneComponent>(unvisited[i]);
+                if (otherZC.gCost <= currentSearchZC.gCost)
+                {
                     currentSearchZone = unvisited[i];
                     currentSearchZC = otherZC;
                 }
@@ -51,7 +54,8 @@ public class Dijkstra : MonoBehaviour
             currentSearchZC.isExplored = true;
             entityManager.SetComponentData<ZoneComponent>(currentSearchZone, currentSearchZC);
 
-            if(selectedZone == endZone) {
+            if (currentSearchZone == endZone)
+            {
                 isRunning = false;
                 continue;
             }
@@ -65,7 +69,7 @@ public class Dijkstra : MonoBehaviour
             ExploreNeighbors8D(currentSearchZC);
         }
         List<Entity> paths = BuildPath();
-        
+
         if (paths.Count <= 0)
         {
             //do something
@@ -86,42 +90,47 @@ public class Dijkstra : MonoBehaviour
     ///<summary>
     ///Explore diagnal neighbors + top-bottom-right-left
     ///</summary>
-    void ExploreNeighbors8D(ZoneComponent currentSearchZC){
-        for(int x = -1; x <=1; x++){
-            for(int y = -1; y< -1; y++){
-                if(x ==0 && y == 0) continue;
+    void ExploreNeighbors8D(ZoneComponent currentSearchZC)
+    {
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y < -1; y++)
+            {
+                if (x == 0 && y == 0) continue;
                 Vector2Int neighborCoor = new Vector2Int(currentSearchZC.coordinates.x + x, currentSearchZC.coordinates.y + y);
 
-                if(!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
+                if (!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
                 Entity neighbor = ZoneStore.Instance.Zones[neighborCoor];
                 ZoneComponent neighborZC = entityManager.GetComponentData<ZoneComponent>(neighbor);
 
-                if(visited.Contains(neighbor) || !neighborZC.isWalkable)continue;
-                int newCostToNeighbor = currentSearchZC.gCost + GetDistance(currentSearchZC, neighborZC);
+                if (visited.Contains(neighbor) || !neighborZC.isWalkable) continue;
+                float newCostToNeighbor = currentSearchZC.gCost + GetDistance(currentSearchZC, neighborZC);
 
-                if(newCostToNeighbor >= neighborZC.gCost && unvisited.Contains(neighbor)) continue;
+                if (newCostToNeighbor >= neighborZC.gCost && unvisited.Contains(neighbor)) continue;
                 neighborZC.gCost = newCostToNeighbor;
-                neightborZC.connectedTo = currentSearchZone;
-                if(!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
+                neighborZC.connectedTo = currentSearchZone;
+                if (!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
             }
         }
     }
-    void ExploreNeighbors4D(ZoneComponent currentSearchZC){
+    void ExploreNeighbors4D(ZoneComponent currentSearchZC)
+    {
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-        foreach(Vector2Int dir in directions){
-                Vector2Int neighborCoor = new Vector2Int(currentSearchZC.coordinates.x, currentSearchZC.coordinates.y) + dir;
+        foreach (Vector2Int dir in directions)
+        {
+            Vector2Int neighborCoor = new Vector2Int(currentSearchZC.coordinates.x, currentSearchZC.coordinates.y) + dir;
 
-                if(!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
-                Entity neighbor = ZoneStore.Instance.Zones[neighborCoor];
-                ZoneComponent neighborZC = entityManager.GetComponentData<ZoneComponent>(neighbor);
+            if (!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
+            Entity neighbor = ZoneStore.Instance.Zones[neighborCoor];
+            ZoneComponent neighborZC = entityManager.GetComponentData<ZoneComponent>(neighbor);
 
-                if(visited.Contains(neighbor) || !neighborZC.isWalkable)continue;
-                int newCostToNeighbor = currentSearchZC.gCost + GetDistance(currentSearchZC, neighborZC);
+            if (visited.Contains(neighbor) || !neighborZC.isWalkable) continue;
+            float newCostToNeighbor = currentSearchZC.gCost + GetDistance(currentSearchZC, neighborZC);
 
-                if(newCostToNeighbor >= neighborZC.gCost && unvisited.Contains(neighbor)) continue;
-                neighborZC.gCost = newCostToNeighbor;
-                neightborZC.connectedTo = currentSearchZone;
-                if(!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
+            if (newCostToNeighbor >= neighborZC.gCost && unvisited.Contains(neighbor)) continue;
+            neighborZC.gCost = newCostToNeighbor;
+            neighborZC.connectedTo = currentSearchZone;
+            if (!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
         }
     }
     List<Entity> BuildPath()
@@ -141,11 +150,12 @@ public class Dijkstra : MonoBehaviour
         path.Reverse();
         return path;
     }
-    int GetDistance(ZoneComponent first, ZoneComponent second){
-        int distX = Mathf.Abs(first.coordinates.x - second.coordinates.x);
-        int distY = Mathf.Abs(first.coordinates.y - second.coordinates.y);
+    float GetDistance(ZoneComponent first, ZoneComponent second)
+    {
+        float distX = Mathf.Abs(first.coordinates.x - second.coordinates.x);
+        float distY = Mathf.Abs(first.coordinates.y - second.coordinates.y);
         //------> 14 == Sqrt(2) * 10 || 10 == straight line
-        if(distX < distY) return 14 * distX + 10 * (distY - distX);
-        return 14* distY + 10 * (distX - distY);
+        if (distX < distY) return 14 * distX + 10 * (distY - distX);
+        return 14 * distY + 10 * (distX - distY);
     }
 }

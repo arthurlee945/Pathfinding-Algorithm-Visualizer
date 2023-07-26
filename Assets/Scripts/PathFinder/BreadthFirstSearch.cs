@@ -28,7 +28,6 @@ public class BreadthFirstSearch : MonoBehaviour
         eQueue.Clear();
         reached.Clear();
         //------------------Start Running the Algo
-        // Algorithm();
         StartCoroutine(Algorithm());
     }
 

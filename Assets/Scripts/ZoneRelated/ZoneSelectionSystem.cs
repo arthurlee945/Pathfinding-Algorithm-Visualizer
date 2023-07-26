@@ -17,6 +17,7 @@ public partial class ZoneSelectionSystem : SystemBase
     Entity hoveredZone;
     Entity pressedZone;
     Entity prevDestinationZone;
+    int2 currentSize;
     bool isStartSwitching, isEndSwitching;
     protected override void OnCreate()
     {
@@ -29,7 +30,13 @@ public partial class ZoneSelectionSystem : SystemBase
     protected override void OnUpdate()
     {
         if (PathFinder.Instance.IsRunning || PathFinder.Instance.IsPreview) return;
-        //------ add guard clause for when algo playing
+        if (currentSize.x != GameManager.GM.panelSize.x || currentSize.y != GameManager.GM.panelSize.y)
+        {
+            currentSize = new int2(GameManager.GM.panelSize.x, GameManager.GM.panelSize.y);
+            hoveredZone = Entity.Null;
+            pressedZone = Entity.Null;
+            prevDestinationZone = Entity.Null;
+        }
         var ray = mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
         var rayStart = ray.origin;
         var rayEnd = ray.GetPoint(500f);
@@ -84,6 +91,12 @@ public partial class ZoneSelectionSystem : SystemBase
         {
             isStartSwitching = false;
             isEndSwitching = false;
+            if (hoveredZone != Entity.Null && EntityManager.GetComponentData<ZoneComponent>(hoveredZone).isWalkable)
+            {
+                URPMaterialPropertyBaseColor prevBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hoveredZone);
+                prevBc.Value = StateColors.Instance.DefaultColor;
+                EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hoveredZone, prevBc);
+            }
         }
     }
 

@@ -21,8 +21,13 @@ public class OptionsDropdown : MonoBehaviour
         dropdownWidth = rectTransform.sizeDelta.x;
         rectTransform.sizeDelta = new Vector2(dropdownWidth, optDropdown.sizeDelta.y);
     }
+    void Update()
+    {
+        if ((PathFinder.Instance.IsRunning || PathFinder.Instance.IsPreview) && isOpen) HandleOptionsDropdownToggle();
+    }
     public void HandleOptionsDropdownToggle()
     {
+        if (PathFinder.Instance.IsRunning || PathFinder.Instance.IsPreview) return;
         if (dropdownAnimationCoroutine != null)
             StopCoroutine(dropdownAnimationCoroutine);
         isOpen = !isOpen;

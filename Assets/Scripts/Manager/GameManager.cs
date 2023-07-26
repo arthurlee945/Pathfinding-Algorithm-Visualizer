@@ -41,6 +41,9 @@ public class GameManager : MonoBehaviour
             case "Breadth-First Search":
                 SelectedAlgo = Algorithms.BreadthFirstSearch;
                 break;
+            case "Depth-First Search":
+                SelectedAlgo = Algorithms.DepthFirstSearch;
+                break;
             case "Dijkstra":
                 SelectedAlgo = Algorithms.Dijkstra;
                 break;

@@ -11,7 +11,7 @@ public struct ZoneComponent : IComponentData
     //------gCost = distance from starting node;
     //------hCost (heuristic) = distance from end node;
     public float gCost, hCost;
-    public float fCost { get{gCost + fCost;} }
+    public float fCost { get { return gCost + fCost; } }
     public Entity connectedTo;
 }
 public class Zone : MonoBehaviour

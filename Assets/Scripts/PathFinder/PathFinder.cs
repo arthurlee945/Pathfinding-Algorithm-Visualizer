@@ -13,8 +13,10 @@ public class PathFinder : MonoBehaviour
     [SerializeField] float searchSpeed = 0.0005f;
     EntityManager entityManager;
 
-    BreadthFirstSearch bfs;
-    DepthFirstSearch dfs;
+    BreadthFirstSearch breadthFirstSearch;
+    DepthFirstSearch depthFirstSearch;
+    Dijkstra dijkstra;
+    AStar aStar;
     public bool IsRunning { get; set; }
     public bool IsPreview { get; set; }
     public Vector2Int StartCoors { get { return startCoors; } set { startCoors = value; } }
@@ -29,7 +31,10 @@ public class PathFinder : MonoBehaviour
         }
         Instance = this;
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        bfs = GetComponent<BreadthFirstSearch>();
+        breadthFirstSearch = GetComponent<BreadthFirstSearch>();
+        depthFirstSearch = GetComponent<DepthFirstSearch>();
+        dijkstra = GetComponent<Dijkstra>();
+        aStar = GetComponent<AStar>();
     }
     void Start()
     {
@@ -46,7 +51,24 @@ public class PathFinder : MonoBehaviour
     {
         if (!ZoneStore.Instance.Zones.ContainsKey(startCoors)) startCoors = new Vector2Int(0, 0);
         if (!ZoneStore.Instance.Zones.ContainsKey(endCoors)) endCoors = (GameManager.GM.panelSize - new Vector2Int(1, 1));
-        if (GameManager.GM.SelectedAlgo == Algorithms.BreadthFirstSearch) bfs.FindPath(startCoors, endCoors);
+
+        switch (GameManager.GM.SelectedAlgo)
+        {
+            case Algorithms.BreadthFirstSearch:
+                breadthFirstSearch.FindPath(startCoors, endCoors);
+                break;
+            case Algorithms.DepthFirstSearch:
+                depthFirstSearch.FindPath(startCoors, endCoors);
+                break;
+            case Algorithms.Dijkstra:
+                dijkstra.FindPath(startCoors, endCoors);
+                break;
+            case Algorithms.A_star:
+                aStar.FindPath(startCoors, endCoors);
+                break;
+            default:
+                break;
+        }
     }
     public void SetStartAndEndPoint()
     {
