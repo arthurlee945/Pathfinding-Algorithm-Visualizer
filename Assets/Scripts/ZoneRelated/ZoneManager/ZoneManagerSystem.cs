@@ -39,7 +39,9 @@ public partial class ZoneManagerSystem : SystemBase
                 coordinates = coor,
                 isWalkable = true,
                 isStart = new Vector2Int(coor.x, coor.y) == PathFinder.Instance.StartCoors,
-                isEnd = new Vector2Int(coor.x, coor.y) == PathFinder.Instance.EndCoors
+                isEnd = new Vector2Int(coor.x, coor.y) == PathFinder.Instance.EndCoors,
+                gCost = Mathf.Infinity,
+                hCost = Mathf.Infinity,
             });
             EntityManager.SetComponentData<LocalTransform>(entity, new LocalTransform
             {

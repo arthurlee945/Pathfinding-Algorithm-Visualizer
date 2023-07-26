@@ -76,7 +76,21 @@ public class BreadthFirstSearch : MonoBehaviour
             isRunning = false;
         }
         //-------------display path
-        DrawPath();
+        List<Entity> paths = BuildPath();
+        if (paths.Count <= 0)
+        {
+            //do something
+        }
+        else
+        {
+            foreach (Entity e in paths)
+            {
+                URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
+                baseColor.Value = StateColors.Instance.PathColor;
+                entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
+                yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
+            }
+        }
         PathFinder.Instance.IsRunning = false;
         PathFinder.Instance.IsPreview = true;
     }
@@ -100,23 +114,6 @@ public class BreadthFirstSearch : MonoBehaviour
         }
     }
 
-    void DrawPath(){
-        List<Entity> paths = BuildPath();
-        if (paths.Count <= 0)
-        {
-            //do something
-        }
-        else
-        {
-            foreach (Entity e in paths)
-            {
-                URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
-                baseColor.Value = StateColors.Instance.PathColor;
-                entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
-                yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
-            }
-        }
-    }
     List<Entity> BuildPath()
     {
         List<Entity> path = new List<Entity>();
