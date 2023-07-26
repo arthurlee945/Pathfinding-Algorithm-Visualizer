@@ -8,6 +8,10 @@ public struct ZoneComponent : IComponentData
     public int2 coordinates;
     public bool isWalkable, isExplored, isPath;
     public bool isStart, isEnd;
+    //------gCost = distance from starting node;
+    //------hCost (heuristic) = distance from end node;
+    public float gCost, hCost;
+    public float fCost { get{gCost + fCost;} }
     public Entity connectedTo;
 }
 public class Zone : MonoBehaviour

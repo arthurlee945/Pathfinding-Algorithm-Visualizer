@@ -83,6 +83,8 @@ public class PathFinder : MonoBehaviour
             zc.isWalkable = true;
             zc.isPath = false;
             zc.isExplored = false;
+            zc.gCost = 0f;
+            zc.hCost = 0f;
             entityManager.SetComponentData<ZoneComponent>(e, zc);
             if (zc.isStart || zc.isEnd) continue;
             URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);

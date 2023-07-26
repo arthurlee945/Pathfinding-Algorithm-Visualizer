@@ -29,7 +29,7 @@ public class DepthFirstSearch : MonoBehaviour
         eStack.Clear();
         reached.Clear();
         //------------------Start Running the Algo
-        Algorithm();
+        StartCoroutine(Algorithm());
     }
 
     /// <summary>
@@ -67,49 +67,68 @@ public class DepthFirstSearch : MonoBehaviour
     /// </code>
     /// </summary>
 
-    void Algorithm()
+    IEnumerator Algorithm()
     {
         eStack.Push(startZone);
-        while (eStack.Count > 0 && PathFinder.Instance.IsRunning)
+        reached.Add(startCoors, startZone);
+        bool isRunning = true;
+        while (eStack.Count > 0 && isRunning)
         {
             currentSearchZone = eStack.Pop();
             ZoneComponent currZC = entityManager.GetComponentData<ZoneComponent>(currentSearchZone);
             currZC.isExplored = true;
             entityManager.SetComponentData<ZoneComponent>(currentSearchZone, currZC);
             //----------------------Set Explored Color
-            URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone);
-            baseColor.Value = StateColors.Instance.ExploredColor;
-            entityManager.SetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone, baseColor);
-
-            StartCoroutine(ExploreNeighbors());
-
-            if (new Vector2Int(currZC.coordinates.x, currZC.coordinates.y) != endCoors) continue;
+            if (currentSearchZone != startZone && currentSearchZone != endZone){
+                URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone);
+                baseColor.Value = StateColors.Instance.ExploredColor;
+                entityManager.SetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone, baseColor);
+            }
+            //--------------------
+            ExploreNeighbors();
+            yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
+            if (currentSearchZone != endZone) continue;
             //------------------End Algo
-            PathFinder.Instance.IsRunning = false;
+            isRunning = false;
         }
+
+        //-------------display path
+        DrawPath();
+        PathFinder.Instance.IsRunning = false;
+        PathFinder.Instance.IsPreview = true;
     }
-    IEnumerator ExploreNeighbors()
+    void ExploreNeighbors()
     {
         foreach (Vector2Int dir in directions)
         {
             ZoneComponent currZC = entityManager.GetComponentData<ZoneComponent>(currentSearchZone);
             Vector2Int neighborCoor = new Vector2Int(currZC.coordinates.x, currZC.coordinates.y) + dir;
+
             if (!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
             Entity neighbor = ZoneStore.Instance.Zones[neighborCoor];
             ZoneComponent neighborZC = entityManager.GetComponentData<ZoneComponent>(neighbor);
-            Vector2Int neightborCoor = new Vector2Int(neighborZC.coordinates.x, neighborZC.coordinates.y);
-            Debug.Log("hi?");
-            yield return new WaitForSeconds(0.2f);
-            if (reached.ContainsKey(neightborCoor) || !neighborZC.isWalkable) continue;
+
+            if (reached.ContainsKey(neighborCoor) || !neighborZC.isWalkable) continue;
             neighborZC.connectedTo = currentSearchZone;
             entityManager.SetComponentData<ZoneComponent>(neighbor, neighborZC);
-            reached.Add(neightborCoor, neighbor);
+            reached.Add(neighborCoor, neighbor);
             eStack.Push(neighbor);
-
         }
     }
+    void DrawPath(){
+        List<Entity> paths = BuildPath();
+        if(paths.Count <= 0){
 
-
+        }else {
+            foreach (Entity e in paths)
+            {
+                URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
+                baseColor.Value = StateColors.Instance.PathColor;
+                entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
+                yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
+            }
+        }
+    }
     List<Entity> BuildPath()
     {
         List<Entity> path = new List<Entity>();
@@ -118,8 +137,9 @@ public class DepthFirstSearch : MonoBehaviour
         while (zc.connectedTo != Entity.Null)
         {
             currentZone = zc.connectedTo;
-            path.Add(currentZone);
             zc = entityManager.GetComponentData<ZoneComponent>(currentZone);
+            if (zc.isStart) continue;
+            path.Add(currentZone);
             zc.isPath = true;
             entityManager.SetComponentData<ZoneComponent>(currentZone, zc);
         }
