@@ -3528,9 +3528,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcd9261478a448d468a816855bc7b9a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startCoors: {x: 0, y: 0}
-  endCoors: {x: 49, y: 49}
-  isRunning: 0
+  startCoors: {x: 5, y: 5}
+  endCoors: {x: 44, y: 44}
+  searchSpeed: 0.001
 --- !u!4 &1391320918
 Transform:
   m_ObjectHideFlags: 0

@@ -76,12 +76,20 @@ public class BreadthFirstSearch : MonoBehaviour
             isRunning = false;
         }
         //-------------display path
-        foreach (Entity e in BuildPath())
+        List<Entity> paths = BuildPath();
+        if (paths.Count <= 0)
         {
-            URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
-            baseColor.Value = StateColors.Instance.PathColor;
-            entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
-            yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
+            //do something
+        }
+        else
+        {
+            foreach (Entity e in paths)
+            {
+                URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
+                baseColor.Value = StateColors.Instance.PathColor;
+                entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
+                yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
+            }
         }
         PathFinder.Instance.IsRunning = false;
         PathFinder.Instance.IsPreview = true;
@@ -114,14 +122,11 @@ public class BreadthFirstSearch : MonoBehaviour
         while (zc.connectedTo != Entity.Null)
         {
             currentZone = zc.connectedTo;
-            path.Add(currentZone);
             zc = entityManager.GetComponentData<ZoneComponent>(currentZone);
+            if (zc.isStart) continue;
+            path.Add(currentZone);
             zc.isPath = true;
             entityManager.SetComponentData<ZoneComponent>(currentZone, zc);
-        }
-        if (path[0] == null || path[0] == endZone)
-        {
-            //return something or validate this on the other class;
         }
         path.Reverse();
         return path;
