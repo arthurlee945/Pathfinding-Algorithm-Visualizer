@@ -5,10 +5,6 @@ using Unity.Mathematics;
 public partial class AlgoContainerSystem : SystemBase
 {
     int2 currentSize2D = new int2(50, 50);
-    // protected override void OnCreate()
-    // {
-    //     // ResizeContainer();
-    // }
     protected override void OnUpdate()
     {
         ResizeContainer();

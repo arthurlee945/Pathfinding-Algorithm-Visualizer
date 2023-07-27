@@ -1052,6 +1052,23 @@ MonoBehaviour:
       m_Flags: 8
     m_Flags: 0
   scrollTickMoveAmmount: 0.5
+  touchDrag:
+    m_Name: Touch Drag
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: 1182170f-ab88-4c72-a25c-b8892350dc7c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 27b5a9f5-86f6-4e3a-ad90-c6e3a2bedb34
+      m_Path: <Touchscreen>/primaryTouch/position
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Touch Drag
+      m_Flags: 0
+    m_Flags: 0
   dragAmount: 0.2
   rotationTexture: {fileID: 2800000, guid: 64555417cfa55ff40b37878eca4563d9, type: 3}
   grabTexture: {fileID: 2800000, guid: 5b40339453a9680488e6d760c5c4a95e, type: 3}
@@ -5708,7 +5725,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Algorithm Name
+  m_text: Breadth-First Search
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b2f39660d921adb42ad56630d012390d, type: 2}
   m_sharedMaterial: {fileID: -3806046114294100500, guid: b2f39660d921adb42ad56630d012390d,

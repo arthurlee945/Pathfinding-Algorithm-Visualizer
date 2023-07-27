@@ -2,6 +2,7 @@ using TMPro;
 using Unity.Entities;
 using Unity.Rendering;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -41,7 +42,6 @@ public class GameManager : MonoBehaviour
         algorithmDropdown.onValueChanged.RemoveListener(index => HandleAlgorithmSelect(index));
         obstaclesDropdown.onValueChanged.RemoveListener(index => HandleObstacleSelect(index));
     }
-
     private void HandleAlgorithmSelect(int selectedIndex)
     {
         if (PathFinder.Instance.IsRunning || PathFinder.Instance.IsPreview) return;
@@ -143,9 +143,5 @@ public class GameManager : MonoBehaviour
             entityManager.SetComponentData<URPMaterialPropertyBaseColor>(e, baseColor);
         }
     }
-    public void UpdatePanelSize(Vector2Int newPanelSize)
-    {
-        panelSize = newPanelSize;
-        mainCamera.transform.position = new Vector3(panelSize.x / 2, 50, panelSize.y / 2);
-    }
+    public void UpdatePanelSize(Vector2Int newPanelSize) => panelSize = newPanelSize;
 }

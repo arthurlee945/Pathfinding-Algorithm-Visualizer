@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 public class CameraController : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class CameraController : MonoBehaviour
 
     //-------------Drag Fields
     [Header("Camera Drag Fields")]
+    [SerializeField] InputAction touchDrag;
+    [SerializeField] InputAction touchRelease;
     [SerializeField] float dragAmount = 0.2f;
     Vector2 currentDragVector, smoothDragVelocity, startingDragPos;
     Vector3 cameraInitPos;
@@ -31,18 +34,28 @@ public class CameraController : MonoBehaviour
     [SerializeField] Texture2D rotationTexture;
     [SerializeField] Texture2D grabTexture;
     bool isDefault = true;
+    bool isTouchStarted;
 
     private void OnEnable()
     {
         cameraMovement.Enable();
         movementSpeedUp.Enable();
         mouseScrollInput.Enable();
+        //----------------- add touch drag fuc
+        touchDrag.Enable();
+        touchRelease.Enable();
+        touchDrag.performed += HandleCameraDragTouch;
     }
     private void OnDisable()
     {
         cameraMovement.Disable();
         movementSpeedUp.Disable();
         mouseScrollInput.Disable();
+
+        //----------------- add touch drag fuc
+        touchDrag.Disable();
+        touchRelease.Disable();
+        touchDrag.performed -= HandleCameraDragTouch;
     }
     void Awake()
     {
@@ -51,6 +64,7 @@ public class CameraController : MonoBehaviour
             mainCamera = Camera.main;
         }
     }
+
     void Update()
     {
         if (Mouse.current.middleButton.isPressed)
@@ -77,11 +91,12 @@ public class CameraController : MonoBehaviour
         {
             ResetCameraInput();
         }
-
+        //-------------------scroll to zoom
         float scrollInput = mouseScrollInput.ReadValue<float>();
         if (scrollInput != 0)
             ZoomCamera(scrollInput > 0);
-
+        //------------------ touch drag
+        if (touchRelease.WasReleasedThisFrame() && isTouchStarted) isTouchStarted = false;
     }
 
     private void IconHandler(string iconName)
@@ -123,7 +138,18 @@ public class CameraController : MonoBehaviour
 
         mainCamera.transform.localPosition = cameraInitPos + new Vector3(-(currentDragVector.x * dragAmount), 0f, -(currentDragVector.y * dragAmount));
     }
-
+    private void HandleCameraDragTouch(InputAction.CallbackContext ctx)
+    {
+        Vector2 currTouchPos = ctx.ReadValue<Vector2>();
+        if (!isTouchStarted)
+        {
+            startingDragPos = currTouchPos;
+            cameraInitPos = mainCamera.transform.position;
+            isTouchStarted = true;
+        }
+        Vector2 differentiatedPos = currTouchPos - startingDragPos;
+        mainCamera.transform.localPosition = cameraInitPos + new Vector3(-(differentiatedPos.x * dragAmount), 0f, -(differentiatedPos.y * dragAmount));
+    }
     private void HanldeCameraMovement()
     {
         Vector2 movement = cameraMovement.ReadValue<Vector2>();

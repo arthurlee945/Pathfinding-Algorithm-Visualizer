@@ -21,6 +21,7 @@ public partial class ZoneManagerSystem : SystemBase
         if (currentDimension.x != GameManager.GM.panelSize.x || currentDimension.y != GameManager.GM.panelSize.y)
         {
             currentDimension = new int2(GameManager.GM.panelSize.x, GameManager.GM.panelSize.y);
+            Camera.main.transform.position = new Vector3(currentDimension.x / 2, Mathf.Max(currentDimension.x, currentDimension.y), currentDimension.y / 2);
             ResetZones();
             CreateZones();
         }
