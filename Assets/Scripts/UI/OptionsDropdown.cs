@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(RectTransform))]
@@ -23,7 +21,13 @@ public class OptionsDropdown : MonoBehaviour
     }
     void Update()
     {
-        if ((PathFinder.Instance.IsRunning || PathFinder.Instance.IsPreview) && isOpen) HandleOptionsDropdownToggle();
+        if ((PathFinder.Instance.IsRunning || PathFinder.Instance.IsPreview) && isOpen)
+        {
+            if (dropdownAnimationCoroutine != null)
+                StopCoroutine(dropdownAnimationCoroutine);
+            isOpen = false;
+            StartCoroutine(DropdownAnimation(false));
+        };
     }
     public void HandleOptionsDropdownToggle()
     {

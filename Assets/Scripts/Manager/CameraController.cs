@@ -21,7 +21,8 @@ public class CameraController : MonoBehaviour
     //-------------Drag Fields
     [Header("Camera Drag Fields")]
     [SerializeField] float dragAmount = 0.2f;
-    Vector2 currentDragVector, smoothDragVelocity, startingDragPos, cameraInitPos;
+    Vector2 currentDragVector, smoothDragVelocity, startingDragPos;
+    Vector3 cameraInitPos;
     //-------------Rot Fields
     Vector2 currentRotVector, smoothRotVelocity;
 
@@ -115,12 +116,12 @@ public class CameraController : MonoBehaviour
         if (Mouse.current.middleButton.wasPressedThisFrame)
         {
             startingDragPos = currMousePos;
-            cameraInitPos = new Vector2(mainCamera.transform.position.x, mainCamera.transform.position.y);
+            cameraInitPos = mainCamera.transform.position;
         }
         Vector2 differentiatedPos = currMousePos - startingDragPos;
         currentDragVector = Vector2.SmoothDamp(currentDragVector, differentiatedPos, ref smoothDragVelocity, smoothInputSpeed);
 
-        mainCamera.transform.localPosition = new Vector3(cameraInitPos.x - (currentDragVector.x * dragAmount), cameraInitPos.y - (currentDragVector.y * dragAmount), mainCamera.transform.position.z);
+        mainCamera.transform.localPosition = cameraInitPos + new Vector3(-(currentDragVector.x * dragAmount), 0f, -(currentDragVector.y * dragAmount));
     }
 
     private void HanldeCameraMovement()

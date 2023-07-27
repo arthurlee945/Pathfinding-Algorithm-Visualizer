@@ -10,7 +10,7 @@ public class SizePanelControl : MonoBehaviour
     [Header("Panel Vectors 2D")]
     [SerializeField] TMP_InputField xInput;
     [SerializeField] TMP_InputField yInput;
-
+    UtilFunc utilFunc = new UtilFunc();
     public Vector2Int panelSize { get; private set; }
     void Awake()
     {
@@ -19,14 +19,14 @@ public class SizePanelControl : MonoBehaviour
     void OnEnable()
     {
         //-----------event 2d
-        xInput.onValueChanged.AddListener(func => HandleIntClampAndValidation(xInput));
-        yInput.onValueChanged.AddListener(func => HandleIntClampAndValidation(yInput));
+        xInput.onValueChanged.AddListener(_ => HandleIntClampAndValidation(xInput));
+        yInput.onValueChanged.AddListener(_ => HandleIntClampAndValidation(yInput));
     }
     void OnDisable()
     {
         //-----------event 2d
-        xInput.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(xInput));
-        yInput.onValueChanged.RemoveListener(func => HandleIntClampAndValidation(yInput));
+        xInput.onValueChanged.RemoveListener(_ => HandleIntClampAndValidation(xInput));
+        yInput.onValueChanged.RemoveListener(_ => HandleIntClampAndValidation(yInput));
 
     }
     void HandleIntClampAndValidation(TMP_InputField intInput)
@@ -44,7 +44,7 @@ public class SizePanelControl : MonoBehaviour
             intInput.text = clampedValue.ToString();
             return;
         }
-        new UtilFunc().Debounce(500, _ =>
+        utilFunc.Debounce(500, _ =>
         {
             panelSize = new Vector2Int(int.Parse(xInput.text), int.Parse(yInput.text));
             GameManager.GM.UpdatePanelSize(panelSize);

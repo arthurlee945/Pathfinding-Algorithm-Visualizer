@@ -12,7 +12,7 @@ public class Dijkstra : MonoBehaviour
     Entity startZone, endZone, currentSearchZone;
     List<Entity> unvisited = new List<Entity>();
     HashSet<Entity> visited = new HashSet<Entity>();
-
+    Coroutine algorithm;
     void Awake()
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -20,6 +20,7 @@ public class Dijkstra : MonoBehaviour
 
     public void FindPath(Vector2Int startCoors, Vector2Int endCoors)
     {
+        if (algorithm != null) StopCoroutine(algorithm);
         PathFinder.Instance.IsRunning = true;
         this.startCoors = startCoors;
         this.endCoors = endCoors;
@@ -29,7 +30,7 @@ public class Dijkstra : MonoBehaviour
         visited.Clear();
         unvisited.Clear();
         //--------------------run algorithm
-        StartCoroutine(Algorithm());
+        algorithm = StartCoroutine(Algorithm());
     }
     IEnumerator Algorithm()
     {
@@ -59,6 +60,7 @@ public class Dijkstra : MonoBehaviour
                 isRunning = false;
                 continue;
             }
+
             //----------------------Set Explored Color
             if (currentSearchZone != startZone && currentSearchZone != endZone)
             {
@@ -67,13 +69,12 @@ public class Dijkstra : MonoBehaviour
                 entityManager.SetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone, baseColor);
             }
             ExploreNeighbors8D(currentSearchZC);
+            yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
         }
+
         List<Entity> paths = BuildPath();
 
-        if (paths.Count <= 0)
-        {
-            //do something
-        }
+        if (paths.Count <= 0) StateChangeDisplay.Instance.DisplayState("No Path Found");
         else
         {
             foreach (Entity e in paths)
@@ -86,6 +87,7 @@ public class Dijkstra : MonoBehaviour
         }
         PathFinder.Instance.IsRunning = false;
         PathFinder.Instance.IsPreview = true;
+        algorithm = null;
     }
     ///<summary>
     ///Explore diagnal neighbors + top-bottom-right-left
@@ -94,11 +96,10 @@ public class Dijkstra : MonoBehaviour
     {
         for (int x = -1; x <= 1; x++)
         {
-            for (int y = -1; y < -1; y++)
+            for (int y = -1; y <= 1; y++)
             {
                 if (x == 0 && y == 0) continue;
                 Vector2Int neighborCoor = new Vector2Int(currentSearchZC.coordinates.x + x, currentSearchZC.coordinates.y + y);
-
                 if (!ZoneStore.Instance.Zones.ContainsKey(neighborCoor)) continue;
                 Entity neighbor = ZoneStore.Instance.Zones[neighborCoor];
                 ZoneComponent neighborZC = entityManager.GetComponentData<ZoneComponent>(neighbor);
@@ -109,6 +110,7 @@ public class Dijkstra : MonoBehaviour
                 if (newCostToNeighbor >= neighborZC.gCost && unvisited.Contains(neighbor)) continue;
                 neighborZC.gCost = newCostToNeighbor;
                 neighborZC.connectedTo = currentSearchZone;
+                entityManager.SetComponentData<ZoneComponent>(neighbor, neighborZC);
                 if (!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
             }
         }
@@ -130,6 +132,7 @@ public class Dijkstra : MonoBehaviour
             if (newCostToNeighbor >= neighborZC.gCost && unvisited.Contains(neighbor)) continue;
             neighborZC.gCost = newCostToNeighbor;
             neighborZC.connectedTo = currentSearchZone;
+            entityManager.SetComponentData<ZoneComponent>(neighbor, neighborZC);
             if (!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
         }
     }
@@ -157,5 +160,9 @@ public class Dijkstra : MonoBehaviour
         //------> 14 == Sqrt(2) * 10 || 10 == straight line
         if (distX < distY) return 14 * distX + 10 * (distY - distX);
         return 14 * distY + 10 * (distX - distY);
+    }
+    public void ResetPath()
+    {
+        if (algorithm != null) StopCoroutine(algorithm);
     }
 }

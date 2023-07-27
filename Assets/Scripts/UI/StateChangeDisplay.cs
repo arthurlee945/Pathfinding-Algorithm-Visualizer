@@ -4,6 +4,7 @@ using TMPro;
 
 public class StateChangeDisplay : MonoBehaviour
 {
+    public static StateChangeDisplay Instance { get; private set; }
     [SerializeField] Color defaultVertexColor = new Color(0.27f, 0.31f, 0.36f, 0.4f);
     [SerializeField] float fadeOutSpeed = 0.01f;
     [SerializeField] float fadeOutAmount = 0.15f;
@@ -13,6 +14,12 @@ public class StateChangeDisplay : MonoBehaviour
     Coroutine currentDisplay;
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+        Instance = this;
         display = GetComponent<TMP_Text>();
         display.color = new Color(0, 0, 0, 0);
     }
@@ -25,7 +32,6 @@ public class StateChangeDisplay : MonoBehaviour
         currentOpacity = startingOpacity;
         StartCoroutine(DisplayTextEffect());
     }
-
     IEnumerator DisplayTextEffect()
     {
         while (currentOpacity >= 0)

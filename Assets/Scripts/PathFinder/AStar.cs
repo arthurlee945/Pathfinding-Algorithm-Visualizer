@@ -13,12 +13,14 @@ public class AStar : MonoBehaviour
     ZoneComponent endZoneZC;
     List<Entity> unvisited = new List<Entity>();
     HashSet<Entity> visited = new HashSet<Entity>();
+    Coroutine algorithm;
     void Awake()
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
     public void FindPath(Vector2Int startCoors, Vector2Int endCoors)
     {
+        if (algorithm != null) StopCoroutine(algorithm);
         PathFinder.Instance.IsRunning = true;
         this.startCoors = startCoors;
         this.endCoors = endCoors;
@@ -29,7 +31,7 @@ public class AStar : MonoBehaviour
         unvisited.Clear();
         visited.Clear();
         //--------------------run algorithm
-        StartCoroutine(Algorithm());
+        algorithm = StartCoroutine(Algorithm());
     }
     IEnumerator Algorithm()
     {
@@ -43,7 +45,7 @@ public class AStar : MonoBehaviour
             for (int i = 1; i < unvisited.Count; i++)
             {
                 ZoneComponent otherZC = entityManager.GetComponentData<ZoneComponent>(unvisited[i]);
-                if (otherZC.fCost <= currentSearchZC.fCost)
+                if (otherZC.fCost <= currentSearchZC.fCost && otherZC.hCost < currentSearchZC.hCost)
                 {
                     currentSearchZone = unvisited[i];
                     currentSearchZC = otherZC;
@@ -51,29 +53,28 @@ public class AStar : MonoBehaviour
             }
             unvisited.Remove(currentSearchZone);
             visited.Add(currentSearchZone);
+
             currentSearchZC.isExplored = true;
             entityManager.SetComponentData<ZoneComponent>(currentSearchZone, currentSearchZC);
 
-            if (currentSearchZone == endZone)
+            if (currentSearchZC.isEnd)
             {
                 isRunning = false;
                 continue;
             }
             //----------------------Set Explored Color
-            if (currentSearchZone != startZone && currentSearchZone != endZone)
+            if (!currentSearchZC.isStart && !currentSearchZC.isEnd)
             {
                 URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone);
                 baseColor.Value = StateColors.Instance.ExploredColor;
                 entityManager.SetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone, baseColor);
             }
             ExploreNeighbors8D(currentSearchZC);
+            yield return new WaitForSeconds(PathFinder.Instance.SearchSpeed);
         }
-        List<Entity> paths = BuildPath();
 
-        if (paths.Count <= 0)
-        {
-            //do something
-        }
+        List<Entity> paths = BuildPath();
+        if (paths.Count <= 0) StateChangeDisplay.Instance.DisplayState("No Path Found");
         else
         {
             foreach (Entity e in paths)
@@ -86,6 +87,7 @@ public class AStar : MonoBehaviour
         }
         PathFinder.Instance.IsRunning = false;
         PathFinder.Instance.IsPreview = true;
+        algorithm = null;
     }
     ///<summary>
     ///Explore diagnal neighbors + top-bottom-right-left
@@ -94,7 +96,7 @@ public class AStar : MonoBehaviour
     {
         for (int x = -1; x <= 1; x++)
         {
-            for (int y = -1; y < -1; y++)
+            for (int y = -1; y <= 1; y++)
             {
                 if (x == 0 && y == 0) continue;
                 Vector2Int neighborCoor = new Vector2Int(currentSearchZC.coordinates.x + x, currentSearchZC.coordinates.y + y);
@@ -105,11 +107,11 @@ public class AStar : MonoBehaviour
 
                 if (visited.Contains(neighbor) || !neighborZC.isWalkable) continue;
                 float newCostToNeighbor = currentSearchZC.gCost + GetDistance(currentSearchZC, neighborZC);
-
                 if (newCostToNeighbor >= neighborZC.gCost && unvisited.Contains(neighbor)) continue;
                 neighborZC.gCost = newCostToNeighbor;
                 neighborZC.hCost = GetDistance(neighborZC, endZoneZC);
                 neighborZC.connectedTo = currentSearchZone;
+                entityManager.SetComponentData<ZoneComponent>(neighbor, neighborZC);
                 if (!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
             }
         }
@@ -132,6 +134,8 @@ public class AStar : MonoBehaviour
             neighborZC.gCost = newCostToNeighbor;
             neighborZC.hCost = GetDistance(neighborZC, endZoneZC);
             neighborZC.connectedTo = currentSearchZone;
+            entityManager.SetComponentData<ZoneComponent>(neighbor, neighborZC);
+
             if (!unvisited.Contains(neighbor)) unvisited.Add(neighbor);
         }
     }
@@ -159,5 +163,9 @@ public class AStar : MonoBehaviour
         //------> 14 == Sqrt(2) * 10 || 10 == straight line
         if (distX < distY) return 14 * distX + 10 * (distY - distX);
         return 14 * distY + 10 * (distX - distY);
+    }
+    public void ResetPath()
+    {
+        if (algorithm != null) StopCoroutine(algorithm);
     }
 }

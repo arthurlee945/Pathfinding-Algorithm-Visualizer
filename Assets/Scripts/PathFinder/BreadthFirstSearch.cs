@@ -13,12 +13,15 @@ public class BreadthFirstSearch : MonoBehaviour
     Dictionary<Vector2Int, Entity> reached = new Dictionary<Vector2Int, Entity>();
     Queue<Entity> eQueue = new Queue<Entity>();
     Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+    Coroutine algorithm;
     void Awake()
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
     public void FindPath(Vector2Int startCoors, Vector2Int endCoors)
     {
+        if (algorithm != null) StopCoroutine(algorithm);
+
         PathFinder.Instance.IsRunning = true;
         this.startCoors = startCoors;
         this.endCoors = endCoors;
@@ -28,7 +31,7 @@ public class BreadthFirstSearch : MonoBehaviour
         eQueue.Clear();
         reached.Clear();
         //------------------Start Running the Algo
-        StartCoroutine(Algorithm());
+        algorithm = StartCoroutine(Algorithm());
     }
 
     /// <summary>
@@ -76,10 +79,7 @@ public class BreadthFirstSearch : MonoBehaviour
         }
         //-------------display path
         List<Entity> paths = BuildPath();
-        if (paths.Count <= 0)
-        {
-            //do something
-        }
+        if (paths.Count <= 0) StateChangeDisplay.Instance.DisplayState("No Path Found");
         else
         {
             foreach (Entity e in paths)
@@ -92,6 +92,7 @@ public class BreadthFirstSearch : MonoBehaviour
         }
         PathFinder.Instance.IsRunning = false;
         PathFinder.Instance.IsPreview = true;
+        algorithm = null;
     }
 
     void ExploreNeighbors()
@@ -112,7 +113,6 @@ public class BreadthFirstSearch : MonoBehaviour
             eQueue.Enqueue(neighbor);
         }
     }
-
     List<Entity> BuildPath()
     {
         List<Entity> path = new List<Entity>();
@@ -129,5 +129,9 @@ public class BreadthFirstSearch : MonoBehaviour
         }
         path.Reverse();
         return path;
+    }
+    public void ResetPath()
+    {
+        if (algorithm != null) StopCoroutine(algorithm);
     }
 }

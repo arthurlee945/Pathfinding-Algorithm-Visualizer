@@ -37,65 +37,69 @@ public partial class ZoneSelectionSystem : SystemBase
             pressedZone = Entity.Null;
             prevDestinationZone = Entity.Null;
         }
-        var ray = mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
-        var rayStart = ray.origin;
-        var rayEnd = ray.GetPoint(500f);
-
-        if (Raycast(rayStart, rayEnd, out var hit))
+        else
         {
-            ZoneComponent zc = EntityManager.GetComponentData<ZoneComponent>(hit.Entity);
-            if (Mouse.current.leftButton.isPressed)
+            var ray = mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            var rayStart = ray.origin;
+            var rayEnd = ray.GetPoint(500f);
+
+            if (Raycast(rayStart, rayEnd, out var hit))
             {
-                if (zc.isStart || isStartSwitching)
+                ZoneComponent zc = EntityManager.GetComponentData<ZoneComponent>(hit.Entity);
+                if (Mouse.current.leftButton.isPressed)
                 {
-                    if (Mouse.current.leftButton.wasPressedThisFrame) isStartSwitching = true;
-                    SetDestinationZone(hit.Entity, zc, true);
-                    return;
+                    if (!GameManager.GM.ObstacleIsCustom) GameManager.GM.SetObstacleToCustom();
+                    if (zc.isStart || isStartSwitching)
+                    {
+                        if (Mouse.current.leftButton.wasPressedThisFrame) isStartSwitching = true;
+                        SetDestinationZone(hit.Entity, zc, true);
+                        return;
+                    }
+                    if (zc.isEnd || isEndSwitching)
+                    {
+                        if (Mouse.current.leftButton.wasPressedThisFrame) isEndSwitching = true;
+                        SetDestinationZone(hit.Entity, zc, false);
+                        return;
+                    }
+                    if (pressedZone == hit.Entity || zc.isEnd || zc.isStart) return;
+                    zc.isWalkable = !zc.isWalkable;
+                    EntityManager.SetComponentData<ZoneComponent>(hit.Entity, zc);
+                    URPMaterialPropertyBaseColor clickedBC = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hit.Entity);
+                    clickedBC.Value = zc.isWalkable ? StateColors.Instance.DefaultColor : StateColors.Instance.NotWalkableColor;
+                    EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hit.Entity, clickedBC);
+                    pressedZone = hit.Entity;
                 }
-                if (zc.isEnd || isEndSwitching)
+                else if (Mouse.current.leftButton.wasReleasedThisFrame && (isStartSwitching || isEndSwitching))
                 {
-                    if (Mouse.current.leftButton.wasPressedThisFrame) isEndSwitching = true;
-                    SetDestinationZone(hit.Entity, zc, false);
-                    return;
+                    isEndSwitching = false;
+                    isStartSwitching = false;
                 }
-                if (pressedZone == hit.Entity || zc.isEnd || zc.isStart) return;
-                zc.isWalkable = !zc.isWalkable;
-                EntityManager.SetComponentData<ZoneComponent>(hit.Entity, zc);
-                URPMaterialPropertyBaseColor clickedBC = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hit.Entity);
-                clickedBC.Value = zc.isWalkable ? StateColors.Instance.DefaultColor : StateColors.Instance.NotWalkableColor;
-                EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hit.Entity, clickedBC);
-                pressedZone = hit.Entity;
-            }
-            else if (Mouse.current.leftButton.wasReleasedThisFrame && (isStartSwitching || isEndSwitching))
-            {
-                isEndSwitching = false;
-                isStartSwitching = false;
+                else
+                {
+                    if (hoveredZone != hit.Entity && hoveredZone != Entity.Null && EntityManager.GetComponentData<ZoneComponent>(hoveredZone).isWalkable)
+                    {
+                        URPMaterialPropertyBaseColor prevBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hoveredZone);
+                        prevBc.Value = StateColors.Instance.DefaultColor;
+                        EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hoveredZone, prevBc);
+                    }
+                    if (zc.isEnd || zc.isStart) return;
+                    if (!zc.isWalkable || hoveredZone == hit.Entity) return;
+                    URPMaterialPropertyBaseColor newBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hit.Entity);
+                    newBc.Value = StateColors.Instance.HoverColor;
+                    EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hit.Entity, newBc);
+                    hoveredZone = hit.Entity;
+                }
             }
             else
             {
-                if (zc.isEnd || zc.isStart) return;
-                if (hoveredZone != hit.Entity && hoveredZone != Entity.Null && EntityManager.GetComponentData<ZoneComponent>(hoveredZone).isWalkable)
+                isStartSwitching = false;
+                isEndSwitching = false;
+                if (hoveredZone != Entity.Null && EntityManager.GetComponentData<ZoneComponent>(hoveredZone).isWalkable)
                 {
                     URPMaterialPropertyBaseColor prevBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hoveredZone);
                     prevBc.Value = StateColors.Instance.DefaultColor;
                     EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hoveredZone, prevBc);
                 }
-                if (!zc.isWalkable || hoveredZone == hit.Entity) return;
-                URPMaterialPropertyBaseColor newBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hit.Entity);
-                newBc.Value = StateColors.Instance.HoverColor;
-                EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hit.Entity, newBc);
-                hoveredZone = hit.Entity;
-            }
-        }
-        else
-        {
-            isStartSwitching = false;
-            isEndSwitching = false;
-            if (hoveredZone != Entity.Null && EntityManager.GetComponentData<ZoneComponent>(hoveredZone).isWalkable)
-            {
-                URPMaterialPropertyBaseColor prevBc = EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(hoveredZone);
-                prevBc.Value = StateColors.Instance.DefaultColor;
-                EntityManager.SetComponentData<URPMaterialPropertyBaseColor>(hoveredZone, prevBc);
             }
         }
     }

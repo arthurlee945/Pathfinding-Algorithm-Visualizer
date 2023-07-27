@@ -2,7 +2,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-
 public partial class AlgoContainerSystem : SystemBase
 {
     int2 currentSize2D = new int2(50, 50);

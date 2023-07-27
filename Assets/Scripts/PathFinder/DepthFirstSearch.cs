@@ -14,12 +14,15 @@ public class DepthFirstSearch : MonoBehaviour
     Stack<Entity> eStack = new Stack<Entity>();
     Vector2Int[] directions = { Vector2Int.right, Vector2Int.up, Vector2Int.left, Vector2Int.down };
     public float SearchSpeed { get; set; } = 0.02f;
+    Coroutine algorithm;
+
     void Awake()
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
     public void FindPath(Vector2Int startCoors, Vector2Int endCoors)
     {
+        if (algorithm != null) StopCoroutine(algorithm);
         PathFinder.Instance.IsRunning = true;
         this.startCoors = startCoors;
         this.endCoors = endCoors;
@@ -29,7 +32,7 @@ public class DepthFirstSearch : MonoBehaviour
         eStack.Clear();
         reached.Clear();
         //------------------Start Running the Algo
-        StartCoroutine(Algorithm());
+        algorithm = StartCoroutine(Algorithm());
     }
 
     /// <summary>
@@ -79,7 +82,8 @@ public class DepthFirstSearch : MonoBehaviour
             currZC.isExplored = true;
             entityManager.SetComponentData<ZoneComponent>(currentSearchZone, currZC);
             //----------------------Set Explored Color
-            if (currentSearchZone != startZone && currentSearchZone != endZone){
+            if (currentSearchZone != startZone && currentSearchZone != endZone)
+            {
                 URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone);
                 baseColor.Value = StateColors.Instance.ExploredColor;
                 entityManager.SetComponentData<URPMaterialPropertyBaseColor>(currentSearchZone, baseColor);
@@ -94,9 +98,9 @@ public class DepthFirstSearch : MonoBehaviour
 
         //-------------display path
         List<Entity> paths = BuildPath();
-        if(paths.Count <= 0){
-
-        }else {
+        if (paths.Count <= 0) StateChangeDisplay.Instance.DisplayState("No Path Found");
+        else
+        {
             foreach (Entity e in paths)
             {
                 URPMaterialPropertyBaseColor baseColor = entityManager.GetComponentData<URPMaterialPropertyBaseColor>(e);
@@ -108,6 +112,7 @@ public class DepthFirstSearch : MonoBehaviour
 
         PathFinder.Instance.IsRunning = false;
         PathFinder.Instance.IsPreview = true;
+        algorithm = null;
     }
     void ExploreNeighbors()
     {
@@ -143,5 +148,9 @@ public class DepthFirstSearch : MonoBehaviour
         }
         path.Reverse();
         return path;
+    }
+    public void ResetPath()
+    {
+        if (algorithm != null) StopCoroutine(algorithm);
     }
 }
