@@ -1,12 +1,13 @@
 using TMPro;
 using Unity.Entities;
 using Unity.Rendering;
+// using Unity.Scenes;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager GM { get; private set; }
+    // [SerializeField] SubScene subSceneToLoad;
     [SerializeField] Camera mainCamera;
     [Header("Algorithm Selector Fields")]
     [SerializeField] TMP_Dropdown algorithmDropdown;
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
         GM = this;
         obsSample = new ObstacleSamples();
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        // SceneSystem.LoadSceneAsync(World.DefaultGameObjectInjectionWorld.Unmanaged, subSceneToLoad.SceneGUID);
     }
     void OnEnable()
     {

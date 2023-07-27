@@ -1062,11 +1062,28 @@ MonoBehaviour:
     m_SingletonActionBindings:
     - m_Name: 
       m_Id: 27b5a9f5-86f6-4e3a-ad90-c6e3a2bedb34
-      m_Path: <Touchscreen>/primaryTouch/position
+      m_Path: <Touchscreen>/position
       m_Interactions: 
       m_Processors: 
       m_Groups: 
       m_Action: Touch Drag
+      m_Flags: 0
+    m_Flags: 0
+  touchRelease:
+    m_Name: Touch Release
+    m_Type: 1
+    m_ExpectedControlType: Button
+    m_Id: b36e5261-6cd5-43ba-a988-64b0cb4db627
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 78439d6b-1f75-476b-9b21-52e15e6fce7b
+      m_Path: <Touchscreen>/Press
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Touch Release
       m_Flags: 0
     m_Flags: 0
   dragAmount: 0.2
@@ -5421,6 +5438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad2bfd0aa63cee48b377a670866f6bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  subSceneToLoad: {fileID: 402300869}
   mainCamera: {fileID: 330585545}
   algorithmDropdown: {fileID: 1885128944}
   obstaclesDropdown: {fileID: 397688698}
