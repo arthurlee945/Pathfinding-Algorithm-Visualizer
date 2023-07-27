@@ -5438,7 +5438,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad2bfd0aa63cee48b377a670866f6bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subSceneToLoad: {fileID: 402300869}
   mainCamera: {fileID: 330585545}
   algorithmDropdown: {fileID: 1885128944}
   obstaclesDropdown: {fileID: 397688698}
