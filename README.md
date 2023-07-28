@@ -5,6 +5,7 @@ This unity project contains 4 main pathfinding methods for you to see.
 - Depth-First Search
 - Dijkstra
 - A*
+  
 --> Files containing each class are located in ./Assets/Scripts/PathFinder
 You are able to change start and end points and add obstacles.
 
